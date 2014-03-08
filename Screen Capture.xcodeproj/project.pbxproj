@@ -11,13 +11,21 @@
 		89D6B46618C91F0C006465EC /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 89D6B46418C91F0C006465EC /* InfoPlist.strings */; };
 		89D6B46818C91F0C006465EC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 89D6B46718C91F0C006465EC /* main.m */; };
 		89D6B46C18C91F0C006465EC /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 89D6B46A18C91F0C006465EC /* Credits.rtf */; };
-		89D6B46F18C91F0C006465EC /* SCAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 89D6B46E18C91F0C006465EC /* SCAppDelegate.m */; };
+		89D6B46F18C91F0C006465EC /* LNCaptureAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 89D6B46E18C91F0C006465EC /* LNCaptureAppDelegate.m */; };
 		89D6B47218C91F0C006465EC /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89D6B47018C91F0C006465EC /* MainMenu.xib */; };
 		89D6B47418C91F0C006465EC /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 89D6B47318C91F0C006465EC /* Images.xcassets */; };
 		89D6B47B18C91F0C006465EC /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89D6B47A18C91F0C006465EC /* XCTest.framework */; };
 		89D6B47C18C91F0C006465EC /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89D6B45B18C91F0C006465EC /* Cocoa.framework */; };
 		89D6B48418C91F0C006465EC /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 89D6B48218C91F0C006465EC /* InfoPlist.strings */; };
 		89D6B48618C91F0C006465EC /* Screen_CaptureTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 89D6B48518C91F0C006465EC /* Screen_CaptureTests.m */; };
+		89D6B49318C9224F006465EC /* LNCaptureWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89D6B49118C9224F006465EC /* LNCaptureWindowController.m */; };
+		89D6B49418C9224F006465EC /* LNCaptureWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89D6B49218C9224F006465EC /* LNCaptureWindowController.xib */; };
+		89D6B49718C923F2006465EC /* LNCapturePanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 89D6B49618C923F2006465EC /* LNCapturePanel.m */; };
+		89FA814618C939EC00AE95B3 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89FA814518C939EC00AE95B3 /* AVFoundation.framework */; };
+		89FA814918C9467700AE95B3 /* LNGIFConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 89FA814818C9467700AE95B3 /* LNGIFConverter.m */; };
+		89FA814B18C94B0D00AE95B3 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89FA814A18C94B0D00AE95B3 /* CoreMedia.framework */; };
+		89FA815A18CA5B0000AE95B3 /* LNCaptureButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 89FA815918CA5B0000AE95B3 /* LNCaptureButtonCell.m */; };
+		89FA815E18CA949900AE95B3 /* LNOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 89FA815D18CA949900AE95B3 /* LNOverlayView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,8 +49,8 @@
 		89D6B46718C91F0C006465EC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		89D6B46918C91F0C006465EC /* Screen Capture-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Screen Capture-Prefix.pch"; sourceTree = "<group>"; };
 		89D6B46B18C91F0C006465EC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
-		89D6B46D18C91F0C006465EC /* SCAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCAppDelegate.h; sourceTree = "<group>"; };
-		89D6B46E18C91F0C006465EC /* SCAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCAppDelegate.m; sourceTree = "<group>"; };
+		89D6B46D18C91F0C006465EC /* LNCaptureAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LNCaptureAppDelegate.h; sourceTree = "<group>"; };
+		89D6B46E18C91F0C006465EC /* LNCaptureAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LNCaptureAppDelegate.m; sourceTree = "<group>"; };
 		89D6B47118C91F0C006465EC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		89D6B47318C91F0C006465EC /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		89D6B47918C91F0C006465EC /* Screen CaptureTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Screen CaptureTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -50,6 +58,19 @@
 		89D6B48118C91F0C006465EC /* Screen CaptureTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Screen CaptureTests-Info.plist"; sourceTree = "<group>"; };
 		89D6B48318C91F0C006465EC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		89D6B48518C91F0C006465EC /* Screen_CaptureTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Screen_CaptureTests.m; sourceTree = "<group>"; };
+		89D6B49018C9224F006465EC /* LNCaptureWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LNCaptureWindowController.h; sourceTree = "<group>"; };
+		89D6B49118C9224F006465EC /* LNCaptureWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LNCaptureWindowController.m; sourceTree = "<group>"; };
+		89D6B49218C9224F006465EC /* LNCaptureWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LNCaptureWindowController.xib; sourceTree = "<group>"; };
+		89D6B49518C923F2006465EC /* LNCapturePanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LNCapturePanel.h; sourceTree = "<group>"; };
+		89D6B49618C923F2006465EC /* LNCapturePanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LNCapturePanel.m; sourceTree = "<group>"; };
+		89FA814518C939EC00AE95B3 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		89FA814718C9467700AE95B3 /* LNGIFConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LNGIFConverter.h; sourceTree = "<group>"; };
+		89FA814818C9467700AE95B3 /* LNGIFConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LNGIFConverter.m; sourceTree = "<group>"; };
+		89FA814A18C94B0D00AE95B3 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		89FA815818CA5B0000AE95B3 /* LNCaptureButtonCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LNCaptureButtonCell.h; sourceTree = "<group>"; };
+		89FA815918CA5B0000AE95B3 /* LNCaptureButtonCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LNCaptureButtonCell.m; sourceTree = "<group>"; };
+		89FA815C18CA949900AE95B3 /* LNOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LNOverlayView.h; sourceTree = "<group>"; };
+		89FA815D18CA949900AE95B3 /* LNOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LNOverlayView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +78,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				89FA814B18C94B0D00AE95B3 /* CoreMedia.framework in Frameworks */,
+				89FA814618C939EC00AE95B3 /* AVFoundation.framework in Frameworks */,
 				89D6B45C18C91F0C006465EC /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -95,6 +118,8 @@
 		89D6B45A18C91F0C006465EC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				89FA814A18C94B0D00AE95B3 /* CoreMedia.framework */,
+				89FA814518C939EC00AE95B3 /* AVFoundation.framework */,
 				89D6B45B18C91F0C006465EC /* Cocoa.framework */,
 				89D6B47A18C91F0C006465EC /* XCTest.framework */,
 				89D6B45D18C91F0C006465EC /* Other Frameworks */,
@@ -115,8 +140,9 @@
 		89D6B46118C91F0C006465EC /* Screen Capture */ = {
 			isa = PBXGroup;
 			children = (
-				89D6B46D18C91F0C006465EC /* SCAppDelegate.h */,
-				89D6B46E18C91F0C006465EC /* SCAppDelegate.m */,
+				89D6B48F18C91F15006465EC /* Classes */,
+				89D6B46D18C91F0C006465EC /* LNCaptureAppDelegate.h */,
+				89D6B46E18C91F0C006465EC /* LNCaptureAppDelegate.m */,
 				89D6B47018C91F0C006465EC /* MainMenu.xib */,
 				89D6B47318C91F0C006465EC /* Images.xcassets */,
 				89D6B46218C91F0C006465EC /* Supporting Files */,
@@ -152,6 +178,48 @@
 				89D6B48218C91F0C006465EC /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		89D6B48F18C91F15006465EC /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				89FA815B18CA6A8200AE95B3 /* Overlay */,
+				89FA814D18CA562900AE95B3 /* Converting */,
+				89FA814C18CA561800AE95B3 /* Capture */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		89FA814C18CA561800AE95B3 /* Capture */ = {
+			isa = PBXGroup;
+			children = (
+				89D6B49018C9224F006465EC /* LNCaptureWindowController.h */,
+				89D6B49118C9224F006465EC /* LNCaptureWindowController.m */,
+				89D6B49218C9224F006465EC /* LNCaptureWindowController.xib */,
+				89D6B49518C923F2006465EC /* LNCapturePanel.h */,
+				89D6B49618C923F2006465EC /* LNCapturePanel.m */,
+				89FA815818CA5B0000AE95B3 /* LNCaptureButtonCell.h */,
+				89FA815918CA5B0000AE95B3 /* LNCaptureButtonCell.m */,
+			);
+			name = Capture;
+			sourceTree = "<group>";
+		};
+		89FA814D18CA562900AE95B3 /* Converting */ = {
+			isa = PBXGroup;
+			children = (
+				89FA814718C9467700AE95B3 /* LNGIFConverter.h */,
+				89FA814818C9467700AE95B3 /* LNGIFConverter.m */,
+			);
+			name = Converting;
+			sourceTree = "<group>";
+		};
+		89FA815B18CA6A8200AE95B3 /* Overlay */ = {
+			isa = PBXGroup;
+			children = (
+				89FA815C18CA949900AE95B3 /* LNOverlayView.h */,
+				89FA815D18CA949900AE95B3 /* LNOverlayView.m */,
+			);
+			name = Overlay;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -198,7 +266,7 @@
 		89D6B45018C91F0C006465EC /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				CLASSPREFIX = SC;
+				CLASSPREFIX = LN;
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = "Levi Nunnink";
 				TargetAttributes = {
@@ -234,6 +302,7 @@
 				89D6B46618C91F0C006465EC /* InfoPlist.strings in Resources */,
 				89D6B47418C91F0C006465EC /* Images.xcassets in Resources */,
 				89D6B46C18C91F0C006465EC /* Credits.rtf in Resources */,
+				89D6B49418C9224F006465EC /* LNCaptureWindowController.xib in Resources */,
 				89D6B47218C91F0C006465EC /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -253,8 +322,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				89D6B46F18C91F0C006465EC /* SCAppDelegate.m in Sources */,
+				89FA815A18CA5B0000AE95B3 /* LNCaptureButtonCell.m in Sources */,
+				89FA815E18CA949900AE95B3 /* LNOverlayView.m in Sources */,
+				89D6B46F18C91F0C006465EC /* LNCaptureAppDelegate.m in Sources */,
+				89D6B49718C923F2006465EC /* LNCapturePanel.m in Sources */,
 				89D6B46818C91F0C006465EC /* main.m in Sources */,
+				89D6B49318C9224F006465EC /* LNCaptureWindowController.m in Sources */,
+				89FA814918C9467700AE95B3 /* LNGIFConverter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -465,6 +539,7 @@
 				89D6B48B18C91F0C006465EC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		89D6B48C18C91F0C006465EC /* Build configuration list for PBXNativeTarget "Screen CaptureTests" */ = {
 			isa = XCConfigurationList;
@@ -473,6 +548,7 @@
 				89D6B48E18C91F0C006465EC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
