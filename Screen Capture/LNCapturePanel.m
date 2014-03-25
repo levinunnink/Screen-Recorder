@@ -112,7 +112,9 @@
     {
         case 53: //Esc
         {
-            [self orderOut:self];
+            if ([self.delegate windowShouldClose:self]) {
+                [self orderOut:self];                
+            }
             break;
         }
         default:

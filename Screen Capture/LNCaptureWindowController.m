@@ -47,7 +47,7 @@
         instance.confirmationButton = confirm;
         
         NSButton *stop = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 160, 25)];
-        [stop setCell:[[LNCaptureButtonCell alloc] init]];
+        //[stop setCell:[[LNCaptureButtonCell alloc] init]];
         [stop setTitle: @"Stop Recording"];
         [stop setKeyEquivalent:@"\E"];
         [stop setButtonType:NSMomentaryLightButton]; //Set what type button You want
@@ -85,10 +85,16 @@
 
 - (BOOL)windowShouldClose:(id)sender
 {
-    if (self.recording) {
+    DMARK;
+    //if (self.recording) {
         [self stopRecording:nil];
-    }
+    //}
     return YES;
+}
+
+- (void)windowWillClose:(NSNotification *)notification
+{
+    DMARK;
 }
 
 #pragma mark -
@@ -122,6 +128,7 @@
     if (!self.overlay.isHidden)
         [self hideOverlay];
     
+    [self.confirmationButton setHidden:YES];
     self.startPoint = [theEvent locationInWindow];
 }
 
@@ -129,7 +136,7 @@
 {
     if (!self.overlay.isHidden)
         [self hideOverlay];
-
+    
     NSPoint curPoint = [theEvent locationInWindow];
     CGRect cropRect = (CGRect){
                           MIN(_startPoint.x, curPoint.x),
@@ -143,10 +150,19 @@
 
 - (void)mouseUp:(NSEvent *)theEvent
 {
-    if (self.capturePanel.cropRect.size.width < kMinCropSize.width || self.capturePanel.cropRect.size.height < kMinCropSize.height) {
-        [self endScreenCapture];
+    NSPoint curPoint = [theEvent locationInWindow];
+    if (self.capturePanel.cropRect.size.width < kMinCropSize.width   ||
+        self.capturePanel.cropRect.size.height < kMinCropSize.height ||
+        !NSPointInRect(curPoint, self.capturePanel.cropRect)
+        ) {
+        if (_recording) {
+            [self stopRecording:nil];
+        } else {
+            [self endScreenCapture];
+        }
         return;
     }
+    
     if (!_recording)
         [self showConfirmationButton];
 }
@@ -186,9 +202,12 @@
 {
     if (!_hideStopButton) {
         [self.capturePanel.contentView addSubview:self.stopRecordingButton];
+        
+        NSRect overlayFrame = self.capturePanel.cropRect;
+
         [self.stopRecordingButton setFrame:(NSRect){
-            self.capturePanel.cropRect.origin.x + (self.capturePanel.cropRect.size.width / 2) - (self.stopRecordingButton.frame.size.width / 2),
-            self.capturePanel.cropRect.origin.y + self.capturePanel.cropRect.size.height + self.stopRecordingButton.frame.size.height,
+            overlayFrame.origin.x,
+            overlayFrame.origin.y,
             self.stopRecordingButton.frame.size.width,
             self.stopRecordingButton.frame.size.height
         }];

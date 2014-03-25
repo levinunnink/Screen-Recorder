@@ -27,5 +27,6 @@
 
 - (void)beginScreenCaptureForScreen:(NSScreen*)screen;
 - (void)endScreenCapture;
+- (void)stopRecording:(id)sender;
 
 @end
