@@ -155,6 +155,9 @@
         self.capturePanel.cropRect.size.height < kMinCropSize.height ||
         !NSPointInRect(curPoint, self.capturePanel.cropRect)
         ) {
+        
+        [self.captureDelegate captureRectTooSmall];
+        
         if (_recording) {
             [self stopRecording:nil];
         } else {

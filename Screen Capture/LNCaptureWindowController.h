@@ -12,6 +12,7 @@
 
 - (void)beginCaptureForScreen:(NSScreen*)screen inRect:(NSRect)rect;
 - (void)endScreenCapture;
+- (void)captureRectTooSmall;
 
 @end
 
