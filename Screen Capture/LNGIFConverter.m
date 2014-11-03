@@ -9,6 +9,13 @@
 #import "LNGIFConverter.h"
 #import <AVFoundation/AVFoundation.h>
 
+NSString* const kLNNotificationGIFCreationBegan = @"LNNotificationGIFCreationBegan";
+NSString* const kLNNotificationGIFCreationProgress = @"LNNotificationGIFCreationProgress";
+NSString* const kLNNotificationGIFCreationComplete = @"LNNotificationGIFCreationComplete";
+NSString* const kLNGIFCreationProgressValueKey = @"LNGIFCreationProgressValueKey";
+NSString* const kLNGIFCreationProgressMinValueKey = @"LNGIFCreationProgressMinValueKey";
+NSString* const kLNGIFCreationProgressMaxValueKey = @"LNGIFCreationProgressMaxValueKey";
+
 @implementation LNGIFConverter
 
 + (LNGIFConverter*)instance
@@ -23,12 +30,12 @@
     return instance;
 }
 
-- (void)convertFileAtPath:(NSURL *)filePath
+- (NSURL*)convertFileAtPath:(NSURL *)filePath withName:(NSString *)fileName
 {
     AVURLAsset* asset = [AVURLAsset URLAssetWithURL:filePath options:nil];
     
     NSString *directory = NSTemporaryDirectory();
-    NSString *filename = [self captureTemporaryFilePath];
+    NSString *filename = [self captureTemporaryFilePathWithName:fileName];
     
     NSURL *saveURL = [NSURL fileURLWithPath:[directory stringByAppendingPathComponent:filename]];
     
@@ -43,15 +50,105 @@
         [[NSFileManager defaultManager] createFileAtPath:[saveURL path] contents:nil attributes:nil];
     }
     
+    NSLog(@"Saved GIF to: %@",[saveURL path]);
+    
     [self makeAnimatedGifFromAsset:asset andSaveToPath:saveURL];
     
+    return saveURL;
+    
+}
+
+- (NSString*)saveImageSequenceAsGIF:(NSArray*)images withName:(NSString *)fileName
+{
+    NSString *directory = NSTemporaryDirectory();
+    NSString *filename = [self captureTemporaryFilePathWithName:fileName];
+    NSURL *saveURL = [NSURL fileURLWithPath:[directory stringByAppendingPathComponent:filename]];
+
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[saveURL path]])
+    {
+        NSError *err;
+        if (![[NSFileManager defaultManager] removeItemAtPath:[saveURL path] error:&err])
+        {
+            NSLog(@"Error deleting existing movie %@",[err localizedDescription]);
+        }
+    } else {
+        [[NSFileManager defaultManager] createFileAtPath:[saveURL path] contents:nil attributes:nil];
+    }
+    
+    [self makeAnimatedGifFromArray:images andSaveToPath:saveURL];
+    
+    NSLog(@"Saved GIF to: %@",[saveURL path]);
+    
+    return [saveURL path];
 }
 
 #pragma mark Private Helpers
 
+- (void) makeAnimatedGifFromArray:(NSArray*)imageArray andSaveToPath:(NSURL*)path
+{
+    NSDictionary *fileProperties = @{ //AWESOME!!!!
+                                     (__bridge id)kCGImagePropertyGIFDictionary: @{
+                                             (__bridge id)kCGImagePropertyGIFLoopCount: @0, // 0 means loop forever
+                                             },
+                                     (__bridge id)kCGImagePropertyHasAlpha : (id)kCFBooleanFalse};
+    
+    const uint8_t colorTable[ 6 ] = { 0, 0, 0, 255, 255 , 255};
+    NSData* colorTableData = [ NSData dataWithBytes: colorTable length:6];
+    
+    NSDictionary *frameProperties = @{
+                                      (__bridge id)kCGImagePropertyGIFDictionary: @{
+                                              (__bridge id)kCGImagePropertyGIFDelayTime: @0.08f, // a float (not double!) in seconds, rounded to centiseconds in the GIF data
+                                              (__bridge id)kCGImagePropertyGIFUnclampedDelayTime: @0.08f,
+                                              (__bridge id)kCGImagePropertyHasAlpha : (id)kCFBooleanFalse
+                                              },
+                                      (__bridge id)kCGImagePropertyHasAlpha : (id)kCFBooleanFalse
+                                      };
+    
+    NSUInteger frames = imageArray.count;
+    
+    CGImageDestinationRef destination = CGImageDestinationCreateWithURL((__bridge CFURLRef)path, kUTTypeGIF, frames, NULL);
+    CGImageDestinationSetProperties(destination, (__bridge CFDictionaryRef)fileProperties);
+    
+    for (NSUInteger i = 0; i < frames; i++) {
+        NSData *imageData = [[imageArray objectAtIndex:i] TIFFRepresentation];
+        CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
+        CGImageRef image = CGImageSourceCreateImageAtIndex(imageSource, 0, NULL);
+        CGImageDestinationAddImage(destination, image, (__bridge CFDictionaryRef)frameProperties);
+    }
+    
+    if (!CGImageDestinationFinalize(destination)) {
+        NSLog(@"failed to finalize image destination");
+    }
+    
+    CFRelease(destination); //RElease?!!!
+    
+    NSString *launchPath = [self executablePathNamed:@"DroplrGIFHelper"];
+    
+    // If Gifsicle is installed, run the optimization
+    if (launchPath) {
+        NSArray *taskOptions = @[@"-o", path, @"-O3", @"--resize",@"480x", @"--careful",@"--no-comments",@"--no-names",@"--same-delay",@"--same-loopcount",@"--no-warnings", @"--", path];
+        
+        NSTask *gifTask = [[NSTask alloc] init];
+        gifTask.launchPath = launchPath;
+        gifTask.arguments = taskOptions;
+        [gifTask launch];
+        [gifTask waitUntilExit];
+    }
+
+}
+
+
 - (void) makeAnimatedGifFromAsset:(AVAsset*)asset andSaveToPath:(NSURL*)path
 {
-    CMTime kFrameCount = CMTimeMakeWithSeconds(CMTimeGetSeconds(asset.duration), 25);
+    
+    
+    int32_t frameRate = [(AVAssetTrack*)[[asset tracks] objectAtIndex:0] nominalFrameRate];
+    CMTime kFrameCount = CMTimeMakeWithSeconds(CMTimeGetSeconds(asset.duration), frameRate);
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLNNotificationGIFCreationBegan object:nil userInfo:@{kLNGIFCreationProgressMinValueKey : @(1), kLNGIFCreationProgressMaxValueKey : @(kFrameCount.value)}];
+    
+    
+    NSLog(@"Frame Count: %lld",kFrameCount.value);
     
     AVAssetImageGenerator* imageGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:asset];
     imageGenerator.requestedTimeToleranceAfter = kCMTimeZero;
@@ -60,14 +157,20 @@
     NSDictionary *fileProperties = @{
                                      (__bridge id)kCGImagePropertyGIFDictionary: @{
                                              (__bridge id)kCGImagePropertyGIFLoopCount: @0, // 0 means loop forever
-                                             }
-                                     };
+                                             },
+                                     (__bridge id)kCGImagePropertyHasAlpha : (id)kCFBooleanFalse};
     
+//    const uint8_t colorTable[ 6 ] = { 0, 0, 0, 255, 255 , 255};
+//    NSData* colorTableData = [ NSData dataWithBytes: colorTable length:6];
+
     NSDictionary *frameProperties = @{
                                       (__bridge id)kCGImagePropertyGIFDictionary: @{
-                                              (__bridge id)kCGImagePropertyGIFDelayTime: @0.08f, // a float (not double!) in seconds, rounded to centiseconds in the GIF data
-                                              (__bridge id)kCGImagePropertyGIFUnclampedDelayTime: @0.08f
-                                              }
+                                              (__bridge id)kCGImagePropertyGIFDelayTime: @0.2f, // a float (not double!) in seconds, rounded to centiseconds in the GIF data
+                                              (__bridge id)kCGImagePropertyGIFUnclampedDelayTime: @0.2f,
+//                                              (__bridge id)kCGImagePropertyGIFImageColorMap : colorTableData,
+                                              (__bridge id)kCGImagePropertyHasAlpha : (id)kCFBooleanFalse
+                                              },
+                                      (__bridge id)kCGImagePropertyHasAlpha : (id)kCFBooleanFalse
                                       };
     
     CGImageDestinationRef destination = CGImageDestinationCreateWithURL((__bridge CFURLRef)path, kUTTypeGIF, kFrameCount.value, NULL);
@@ -75,6 +178,9 @@
     
     for (NSUInteger i = 1; i <= kFrameCount.value; i++) {
         @autoreleasepool {
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:kLNNotificationGIFCreationProgress object:nil userInfo:@{kLNGIFCreationProgressValueKey : @(i / kFrameCount.value)}];
+            
             NSError* err;
             CMTime actualTime;
             CMTime requestedTime = CMTimeConvertScale(CMTimeMake(i, kFrameCount.timescale), asset.duration.timescale, kCMTimeRoundingMethod_RoundHalfAwayFromZero);
@@ -88,9 +194,60 @@
     }
     
     CFRelease(destination);
+    
+    NSString *launchPath = [self executablePathNamed:@"DroplrGIFHelper"];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLNNotificationGIFCreationComplete object:nil];
+    
+    // If Gifsicle is installed, run the optimization
+    if (launchPath) {
+        NSArray *taskOptions = @[@"-o", path, @"-O3", @"--careful",@"--no-comments",@"--no-names",@"--same-delay",@"--same-loopcount", @"--colors=100", path];
+        
+        NSTask *gifTask = [[NSTask alloc] init];
+        gifTask.launchPath = launchPath;
+        gifTask.arguments = taskOptions;
+        [gifTask launch];
+        [gifTask waitUntilExit];
+        
+//        taskOptions = @[@"-o", path, @"--colors", @"10", @"--no-comments",@"--no-names",@"--same-delay",@"--same-loopcount",@"--no-warnings", @"--", path];
+//        
+//        gifTask = [[NSTask alloc] init];
+//        gifTask.launchPath = launchPath;
+//        gifTask.arguments = taskOptions;
+//        [gifTask launch];
+//        [gifTask waitUntilExit];
+        DLOG(@"GIF TASK: %@", gifTask.arguments);
+
+    }
+    
 }
 
-- (NSString*)captureTemporaryFilePath
+-(NSString *)executablePathNamed:(NSString*)resourceName
+{
+    NSString *path = nil;
+    
+    path = [[NSBundle mainBundle] pathForAuxiliaryExecutable:resourceName];
+    if (!path) {
+        path = [[NSBundle mainBundle] pathForResource:resourceName ofType:@""];
+    }
+    
+    if (path) {
+        if ([[NSFileManager defaultManager] isExecutableFileAtPath:path]) {
+            return path;
+        } else {
+            NSLog(@"File %@ for %@ is not executable", path, resourceName);
+        }
+    }
+    
+    NSLog(@"Returning gifscicle %@ %@", resourceName,path);
+    
+    NSBeep();
+    
+    return nil;
+}
+
+
+- (NSString*)captureTemporaryFilePathWithName:(NSString*)name
 {
     static NSDateFormatter* dateFormatter = nil;
     static NSDateFormatter* timeFormatter = nil;
@@ -104,10 +261,10 @@
     }
     
     NSDate* now = [NSDate date];
-    NSString* date = [dateFormatter stringFromDate:now];
+    NSString* date = [dateFormatter stringFromDate:now]; //THis is cool!!!
     NSString* time = [timeFormatter stringFromDate:now];
     
-    NSString *fileName = [NSString stringWithFormat:@"%@ on %@ at %@.%@", @"Screencapture", date, time, @"gif"];
+    NSString *fileName = [NSString stringWithFormat:@"%@ on %@ at %@.%@", name, date, time, @"gif"];
     
     return fileName;
 }

@@ -8,9 +8,18 @@
 
 #import <Foundation/Foundation.h>
 
+extern NSString* const kLNNotificationGIFCreationBegan;
+extern NSString* const kLNNotificationGIFCreationProgress;
+extern NSString* const kLNNotificationGIFCreationComplete;
+extern NSString* const kLNGIFCreationProgressValueKey;
+extern NSString* const kLNGIFCreationProgressMinValueKey;
+extern NSString* const kLNGIFCreationProgressMaxValueKey;
+
+
 @interface LNGIFConverter : NSObject
 
 + (LNGIFConverter*)instance;
-- (void)convertFileAtPath:(NSURL*)filePath;
+- (NSURL*)convertFileAtPath:(NSURL*)filePath withName:(NSString*)fileName;
+- (NSString*)saveImageSequenceAsGIF:(NSArray*)images withName:(NSString*)fileName;
 
 @end

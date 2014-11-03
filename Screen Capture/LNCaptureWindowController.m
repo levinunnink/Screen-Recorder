@@ -16,7 +16,6 @@
 @interface LNCaptureWindowController () <NSWindowDelegate>
 
 @property (nonatomic, assign) NSPoint startPoint;
-@property (nonatomic, readonly) LNCapturePanel *capturePanel;
 @property (nonatomic, strong) NSButton *confirmationButton;
 @property (nonatomic, strong) NSButton *stopRecordingButton;
 @property (nonatomic, strong) LNOverlayView *overlay;

@@ -7,6 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <LNCapturePanel.h>
 
 @protocol SCCaptureDelegate <NSObject>
 
@@ -23,6 +24,7 @@
 @property (nonatomic, assign) BOOL recording;
 @property (nonatomic, assign) BOOL hideStopButton;
 @property (nonatomic, strong) NSString* overlayMessage;
+@property (nonatomic, readonly) LNCapturePanel *capturePanel;
 
 + (LNCaptureWindowController*)instance;
 
