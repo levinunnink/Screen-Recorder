@@ -176,7 +176,7 @@ NSString* const kLNGIFCreationProgressMaxValueKey = @"LNGIFCreationProgressMaxVa
     CGImageDestinationRef destination = CGImageDestinationCreateWithURL((__bridge CFURLRef)path, kUTTypeGIF, kFrameCount.value, NULL);
     CGImageDestinationSetProperties(destination, (__bridge CFDictionaryRef)fileProperties);
     
-    for (CGFloat i = 1; i <= kFrameCount.value; i++) {
+    for (CGFloat i = 0; i < kFrameCount.value; i++) {
         @autoreleasepool {
             CGFloat progress = i / [[NSNumber numberWithInteger: kFrameCount.value] floatValue];
             [[NSNotificationCenter defaultCenter] postNotificationName:kLNNotificationGIFCreationProgress object:nil userInfo:@{kLNGIFCreationProgressValueKey : @(progress)}];
