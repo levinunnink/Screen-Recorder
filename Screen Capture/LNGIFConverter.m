@@ -30,7 +30,7 @@ NSString* const kLNGIFCreationProgressMaxValueKey = @"LNGIFCreationProgressMaxVa
     return instance;
 }
 
-- (NSURL*)convertFileAtPath:(NSURL *)filePath withName:(NSString *)fileName
+- (NSURL*)convertFileAtPath:(NSURL *)filePath withName:(NSString *)fileName scaleFactor:(float)scale
 {
     AVURLAsset* asset = [AVURLAsset URLAssetWithURL:filePath options:nil];
     
@@ -52,7 +52,7 @@ NSString* const kLNGIFCreationProgressMaxValueKey = @"LNGIFCreationProgressMaxVa
     
     NSLog(@"Saved GIF to: %@",[saveURL path]);
     
-    [self makeAnimatedGifFromAsset:asset andSaveToPath:saveURL];
+    [self makeAnimatedGifFromAsset:asset andSaveToPath:saveURL scaleFactor:scale];
     
     return saveURL;
     
@@ -138,7 +138,7 @@ NSString* const kLNGIFCreationProgressMaxValueKey = @"LNGIFCreationProgressMaxVa
 }
 
 
-- (void) makeAnimatedGifFromAsset:(AVAsset*)asset andSaveToPath:(NSURL*)path
+- (void) makeAnimatedGifFromAsset:(AVAsset*)asset andSaveToPath:(NSURL*)path scaleFactor:(float)scaleFactor
 {
     
     
@@ -176,10 +176,10 @@ NSString* const kLNGIFCreationProgressMaxValueKey = @"LNGIFCreationProgressMaxVa
     CGImageDestinationRef destination = CGImageDestinationCreateWithURL((__bridge CFURLRef)path, kUTTypeGIF, kFrameCount.value, NULL);
     CGImageDestinationSetProperties(destination, (__bridge CFDictionaryRef)fileProperties);
     
-    for (NSUInteger i = 1; i <= kFrameCount.value; i++) {
+    for (CGFloat i = 1; i <= kFrameCount.value; i++) {
         @autoreleasepool {
-            
-            [[NSNotificationCenter defaultCenter] postNotificationName:kLNNotificationGIFCreationProgress object:nil userInfo:@{kLNGIFCreationProgressValueKey : @(i / kFrameCount.value)}];
+            CGFloat progress = i / [[NSNumber numberWithInteger: kFrameCount.value] floatValue];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kLNNotificationGIFCreationProgress object:nil userInfo:@{kLNGIFCreationProgressValueKey : @(progress)}];
             
             NSError* err;
             CMTime actualTime;
@@ -195,29 +195,14 @@ NSString* const kLNGIFCreationProgressMaxValueKey = @"LNGIFCreationProgressMaxVa
     
     CFRelease(destination);
     
-    NSString *launchPath = [self executablePathNamed:@"DroplrGIFHelper"];
-    
     [[NSNotificationCenter defaultCenter] postNotificationName:kLNNotificationGIFCreationComplete object:nil];
     
     // If Gifsicle is installed, run the optimization
-    if (launchPath) {
-        NSArray *taskOptions = @[@"-o", path, @"-O3", @"--careful",@"--no-comments",@"--no-names",@"--same-delay",@"--same-loopcount", @"--colors=100", path];
-        
-        NSTask *gifTask = [[NSTask alloc] init];
-        gifTask.launchPath = launchPath;
-        gifTask.arguments = taskOptions;
-        [gifTask launch];
-        [gifTask waitUntilExit];
-        
-//        taskOptions = @[@"-o", path, @"--colors", @"10", @"--no-comments",@"--no-names",@"--same-delay",@"--same-loopcount",@"--no-warnings", @"--", path];
-//        
-//        gifTask = [[NSTask alloc] init];
-//        gifTask.launchPath = launchPath;
-//        gifTask.arguments = taskOptions;
-//        [gifTask launch];
-//        [gifTask waitUntilExit];
-        DLOG(@"GIF TASK: %@", gifTask.arguments);
-
+    if ([self GIFTaskExists]) {
+        [self executeGIFTaskWithArgs:@[@"-o", path, @"-O3", @"--careful",@"--no-comments",@"--no-names",@"--same-delay",@"--same-loopcount", path]];
+        if (scaleFactor < 1.0) {
+            [self executeGIFTaskWithArgs:@[@"-o", path, [NSString stringWithFormat:@"--scale=%0.2f", scaleFactor], path]];
+        }
     }
     
 }
@@ -267,6 +252,21 @@ NSString* const kLNGIFCreationProgressMaxValueKey = @"LNGIFCreationProgressMaxVa
     NSString *fileName = [NSString stringWithFormat:@"%@ on %@ at %@.%@", name, date, time, @"gif"];
     
     return fileName;
+}
+
+- (BOOL)GIFTaskExists
+{
+    return [self executablePathNamed:@"DroplrGIFHelper"] != nil;
+}
+
+- (void)executeGIFTaskWithArgs:(NSArray*)args
+{
+    NSString *launchPath = [self executablePathNamed:@"DroplrGIFHelper"];
+    NSTask *gifTask = [[NSTask alloc] init];
+    gifTask.launchPath = launchPath;
+    gifTask.arguments = args;
+    [gifTask launch];
+    [gifTask waitUntilExit];
 }
 
 

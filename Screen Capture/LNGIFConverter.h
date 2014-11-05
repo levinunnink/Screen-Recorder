@@ -19,7 +19,7 @@ extern NSString* const kLNGIFCreationProgressMaxValueKey;
 @interface LNGIFConverter : NSObject
 
 + (LNGIFConverter*)instance;
-- (NSURL*)convertFileAtPath:(NSURL*)filePath withName:(NSString*)fileName;
+- (NSURL*)convertFileAtPath:(NSURL*)filePath withName:(NSString*)fileName scaleFactor:(float)scale;
 - (NSString*)saveImageSequenceAsGIF:(NSArray*)images withName:(NSString*)fileName;
 
 @end
