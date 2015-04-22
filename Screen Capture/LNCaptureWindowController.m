@@ -69,13 +69,14 @@
 - (void)startRecording:(id)sender
 {
     self.recording = YES;
+    self.window.ignoresMouseEvents = YES;
     [self.confirmationButton setHidden:YES];
-    [self showStopRecordingButton];
-    [self.captureDelegate beginCaptureForScreen:self.capturePanel.screen inRect:self.capturePanel.cropRect];
+    [self showStopRecordingButton];    [self.captureDelegate beginCaptureForScreen:self.capturePanel.screen inRect:self.capturePanel.cropRect];
 }
 
 - (void)stopRecording:(id)sender
 {
+    self.window.ignoresMouseEvents = NO;
     [self endScreenCapture];
     [self.captureDelegate endScreenCapture];
 }
@@ -124,6 +125,8 @@
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
+    if (_recording) return;
+    
     if (!self.overlay.isHidden)
         [self hideOverlay];
     
@@ -133,6 +136,8 @@
 
 - (void)mouseDragged:(NSEvent *)theEvent
 {
+    if (_recording) return;
+    
     if (!self.overlay.isHidden)
         [self hideOverlay];
     
@@ -149,6 +154,8 @@
 
 - (void)mouseUp:(NSEvent *)theEvent
 {
+    if (_recording) return;
+    
     NSPoint curPoint = [theEvent locationInWindow];
     if (self.capturePanel.cropRect.size.width < kMinCropSize.width   ||
         self.capturePanel.cropRect.size.height < kMinCropSize.height ||

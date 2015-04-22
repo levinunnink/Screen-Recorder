@@ -92,9 +92,6 @@ NSString* const kLNGIFCreationProgressMaxValueKey = @"LNGIFCreationProgressMaxVa
                                              },
                                      (__bridge id)kCGImagePropertyHasAlpha : (id)kCFBooleanFalse};
     
-    const uint8_t colorTable[ 6 ] = { 0, 0, 0, 255, 255 , 255};
-    NSData* colorTableData = [ NSData dataWithBytes: colorTable length:6];
-    
     NSDictionary *frameProperties = @{
                                       (__bridge id)kCGImagePropertyGIFDictionary: @{
                                               (__bridge id)kCGImagePropertyGIFDelayTime: @0.08f, // a float (not double!) in seconds, rounded to centiseconds in the GIF data
@@ -122,19 +119,10 @@ NSString* const kLNGIFCreationProgressMaxValueKey = @"LNGIFCreationProgressMaxVa
     
     CFRelease(destination); //RElease?!!!
     
-    NSString *launchPath = [self executablePathNamed:@"DroplrGIFHelper"];
-    
     // If Gifsicle is installed, run the optimization
-    if (launchPath) {
-        NSArray *taskOptions = @[@"-o", path, @"-O3", @"--resize",@"480x", @"--careful",@"--no-comments",@"--no-names",@"--same-delay",@"--same-loopcount",@"--no-warnings", @"--", path];
-        
-        NSTask *gifTask = [[NSTask alloc] init];
-        gifTask.launchPath = launchPath;
-        gifTask.arguments = taskOptions;
-        [gifTask launch];
-        [gifTask waitUntilExit];
+    if ([self GIFTaskExists]) {
+        [self executeGIFTaskWithArgs:@[@"-o", path, @"-O3", @"--resize",@"480x", @"--careful",@"--no-comments",@"--no-names",@"--same-delay",@"--same-loopcount",@"--no-warnings", @"--", path]];
     }
-
 }
 
 
