@@ -19,6 +19,7 @@
 @property (nonatomic, strong) NSButton *confirmationButton;
 @property (nonatomic, strong) NSButton *stopRecordingButton;
 @property (nonatomic, strong) LNOverlayView *overlay;
+@property (nonatomic, assign) BOOL mouseDidDrag;
 
 @end
 
@@ -85,7 +86,7 @@
 
 - (BOOL)windowShouldClose:(id)sender
 {
-    DMARK;
+    
     //if (self.recording) {
         [self stopRecording:nil];
     //}
@@ -94,7 +95,7 @@
 
 - (void)windowWillClose:(NSNotification *)notification
 {
-    DMARK;
+    
 }
 
 #pragma mark -
@@ -102,6 +103,7 @@
 - (void)beginScreenCaptureForScreen:(NSScreen *)screen
 {
     [[NSCursor crosshairCursor] push];
+    
     
     self.recording = NO;
     [self.confirmationButton setHidden:YES];
@@ -117,6 +119,7 @@
 
 - (void)endScreenCapture
 {
+    
     self.recording = NO;
     [self.window orderOut:self];
 }
@@ -125,21 +128,29 @@
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
+    
     if (_recording) return;
     
     if (!self.overlay.isHidden)
         [self hideOverlay];
     
+    
+    self.mouseDidDrag = NO;
+    
     [self.confirmationButton setHidden:YES];
     self.startPoint = [theEvent locationInWindow];
+    self.capturePanel.cropRect = CGRectMake(self.startPoint.x, self.startPoint.y, 0, 0);
 }
 
 - (void)mouseDragged:(NSEvent *)theEvent
 {
+    
     if (_recording) return;
     
     if (!self.overlay.isHidden)
         [self hideOverlay];
+    
+    self.mouseDidDrag = YES;
     
     NSPoint curPoint = [theEvent locationInWindow];
     CGRect cropRect = (CGRect){
@@ -154,12 +165,14 @@
 
 - (void)mouseUp:(NSEvent *)theEvent
 {
+    
     if (_recording) return;
     
     NSPoint curPoint = [theEvent locationInWindow];
+    
     if (self.capturePanel.cropRect.size.width < kMinCropSize.width   ||
         self.capturePanel.cropRect.size.height < kMinCropSize.height ||
-        !NSPointInRect(curPoint, self.capturePanel.cropRect)
+        (!NSPointInRect(curPoint, self.capturePanel.cropRect) && !_mouseDidDrag)
         ) {
         
         [self.captureDelegate captureRectTooSmall];
@@ -178,6 +191,7 @@
 
 - (void)keyDown:(NSEvent *)theEvent
 {
+    
     switch ([theEvent keyCode])
     {
         case 53: //Esc
@@ -197,6 +211,7 @@
 
 - (void)showConfirmationButton
 {
+    
     [self.capturePanel.contentView addSubview:self.confirmationButton];
     [self.confirmationButton setFrame:(NSRect){
         self.capturePanel.cropRect.origin.x + (self.capturePanel.cropRect.size.width / 2) - (self.confirmationButton.frame.size.width / 2),
@@ -209,6 +224,7 @@
 
 - (void)showStopRecordingButton
 {
+    
     if (!_hideStopButton) {
         [self.capturePanel.contentView addSubview:self.stopRecordingButton];
         
@@ -231,6 +247,7 @@
 
 - (void)showOverlay
 {
+    
     if (!self.overlay) {
         self.overlay = [[LNOverlayView alloc] initWithFrame:NSMakeRect(0, 0, 600, 200)];
         self.overlay.label = self.overlayMessage ? self.overlayMessage : @"Drag on screen to record video.";
@@ -243,6 +260,7 @@
 
 - (void)hideOverlay
 {
+    
     [self.overlay setHidden:YES];
 }
 
