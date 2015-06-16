@@ -38,7 +38,16 @@ NSString* const kLNGIFCreationProgressMaxValueKey = @"LNGIFCreationProgressMaxVa
     NSString *filename = [self captureTemporaryFilePathWithName:fileName];
     
     NSURL *saveURL = [NSURL fileURLWithPath:[directory stringByAppendingPathComponent:filename]];
+    if([self FFMPEGPathExists]) {
+        DLOG(@"Executing FFMPEG");
+        [self executeFFMPEGTaskWithArgs:@[@"-i", filePath.path, @"-pix_fmt", @"rgb24", @"-r", @"10", @"-f", @"gif", saveURL.path]];
+        if ([self GIFTaskExists]) {
+            [self executeGIFTaskWithArgs:@[@"-o", saveURL.path, @"-O3", @"--careful",@"--no-comments",@"--no-names",@"--same-delay",@"--same-loopcount", saveURL.path]];
+        }
+        return saveURL;
+    }
     
+    // Fallback to really slow Quartz Gifs if FFMPEG doesn't exist
     if ([[NSFileManager defaultManager] fileExistsAtPath:[saveURL path]])
     {
         NSError *err;
@@ -255,6 +264,21 @@ NSString* const kLNGIFCreationProgressMaxValueKey = @"LNGIFCreationProgressMaxVa
     gifTask.arguments = args;
     [gifTask launch];
     [gifTask waitUntilExit];
+}
+
+- (BOOL)FFMPEGPathExists
+{
+    return [self executablePathNamed:@"ffmpeg"] != nil;
+}
+
+- (void)executeFFMPEGTaskWithArgs:(NSArray*)args
+{
+    NSString *launchPath = [self executablePathNamed:@"ffmpeg"];
+    NSTask *ffmpegTask = [[NSTask alloc] init];
+    ffmpegTask.launchPath = launchPath;
+    ffmpegTask.arguments = args;
+    [ffmpegTask launch];
+    [ffmpegTask waitUntilExit];
 }
 
 
