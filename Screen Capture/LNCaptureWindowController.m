@@ -87,7 +87,7 @@
 
 - (BOOL)windowShouldClose:(id)sender
 {
-    
+    if (!_recording) [self.captureDelegate captureRectClickOutside];
     //if (self.recording) {
         [self stopRecording:nil];
     //}
@@ -175,8 +175,8 @@
         self.capturePanel.cropRect.size.height < kMinCropSize.height ||
         (!NSPointInRect(curPoint, self.capturePanel.cropRect) && !_mouseDidDrag)
         ) {
-        
-        [self.captureDelegate captureRectTooSmall];
+
+        [self.captureDelegate captureRectClickOutside];
         
         if (_recording) {
             [self stopRecording:nil];

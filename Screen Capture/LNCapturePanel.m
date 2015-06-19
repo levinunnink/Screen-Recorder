@@ -109,7 +109,7 @@
         case 53: //Esc
         {
             if ([self.delegate windowShouldClose:self]) {
-                [self orderOut:self];                
+                [self orderOut:self];     
             }
             break;
         }
