@@ -263,7 +263,16 @@ NSString* const kLNGIFCreationProgressMaxValueKey = @"LNGIFCreationProgressMaxVa
     gifTask.launchPath = launchPath;
     gifTask.arguments = args;
     [gifTask launch];
-    [gifTask waitUntilExit];
+    
+    // Kill task if runs for more than 1 minute
+    NSDate *terminateDate = [[NSDate date] dateByAddingTimeInterval:60.0];
+    while ((gifTask != nil) && ([gifTask isRunning]))	{
+        if ([[NSDate date] compare:(id)terminateDate] == NSOrderedDescending)	{
+            NSLog(@"Error: terminating task, timeout was reached.");
+            [gifTask terminate];
+        }
+        [NSThread sleepForTimeInterval:1.0];
+    }
 }
 
 - (BOOL)FFMPEGPathExists
@@ -278,7 +287,17 @@ NSString* const kLNGIFCreationProgressMaxValueKey = @"LNGIFCreationProgressMaxVa
     ffmpegTask.launchPath = launchPath;
     ffmpegTask.arguments = args;
     [ffmpegTask launch];
-    [ffmpegTask waitUntilExit];
+    
+    // Kill task if runs for more than 1 minute
+    NSDate *terminateDate = [[NSDate date] dateByAddingTimeInterval:60.0];
+    while ((ffmpegTask != nil) && ([ffmpegTask isRunning]))	{
+        if ([[NSDate date] compare:(id)terminateDate] == NSOrderedDescending)	{
+            NSLog(@"Error: terminating task, timeout was reached.");
+            [ffmpegTask terminate];
+        }
+        [NSThread sleepForTimeInterval:1.0];
+    }
+
 }
 
 
