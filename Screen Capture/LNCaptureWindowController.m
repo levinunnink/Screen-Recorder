@@ -72,7 +72,8 @@
     self.recording = YES;
     self.window.ignoresMouseEvents = YES;
     [self.confirmationButton setHidden:YES];
-    [self showStopRecordingButton];    [self.captureDelegate beginCaptureForScreen:self.capturePanel.screen inRect:self.capturePanel.cropRect];
+    [self showStopRecordingButton];
+    [self.captureDelegate beginCaptureForScreen:self.capturePanel.screen inRect:self.capturePanel.cropRect];
 }
 
 - (void)stopRecording:(id)sender

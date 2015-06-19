@@ -7,10 +7,14 @@
 //
 
 #import "LNCapturePanel.h"
+#import "DMBackgroundColorView.h"
+
+#import <QuartzCore/QuartzCore.h>
 
 @interface SCCapturePanelBackgroundView : NSView
 
 @property (nonatomic, assign) NSRect cropRect;
+@property (nonatomic, weak) DMBackgroundColorView *cropScreen;
 
 @end
 
@@ -29,26 +33,20 @@
     if (self) {
         [self setAutoresizingMask:NSViewHeightSizable | NSViewWidthSizable];
         [self setAutoresizesSubviews:YES];
+        DMBackgroundColorView *crop = [[DMBackgroundColorView alloc] initWithFrame:CGRectZero];
+        crop.backgroundColor = [NSColor clearColor];
+        [self addSubview:crop];
+        self.cropScreen = crop;
     }
     
     return self;
 }
 
-- (void)drawRect:(NSRect)dirtyRect
+- (void)setCropRect:(NSRect)cropRect
 {
-    [[NSColor colorWithCalibratedWhite:0.0 alpha:0.5] setFill];
-    NSRectFill(dirtyRect);
-    
-    [[NSColor clearColor] setFill];
-    NSRectFill(_cropRect);
-    
-    [[NSGraphicsContext currentContext] setShouldAntialias: NO];
-    
-    [[NSColor blackColor] setStroke];
-    NSBezierPath *line = [NSBezierPath bezierPathWithRect:NSIntegralRect(_cropRect)];
-    line.lineWidth = 1.0;
-    [line stroke];
-    
+    DMARK;
+    _cropRect = cropRect;
+    self.cropScreen.frame = cropRect;
 }
 
 - (void)mouseEntered:(NSEvent *)theEvent
@@ -84,12 +82,10 @@
     [self setAlphaValue:1.0];
     [self setOpaque:NO];
     [self setHasShadow:NO];
-    [self useOptimizedDrawing:YES];
     [self setHidesOnDeactivate:NO];
     [self setLevel:kCGMaximumWindowLevel];
     [self setRestorable:NO];
     [self disableSnapshotRestoration];
-    [self setAutorecalculatesKeyViewLoop:YES];
     
     [self setContentView:[[SCCapturePanelBackgroundView alloc] initWithFrame:NSZeroRect]];
     
@@ -129,7 +125,6 @@
 {
     _cropRect = NSIntegralRect(cropRect);
     self.bgView.cropRect = _cropRect;
-    [self.bgView setNeedsDisplay:YES];
 }
 
 - (SCCapturePanelBackgroundView*)bgView
