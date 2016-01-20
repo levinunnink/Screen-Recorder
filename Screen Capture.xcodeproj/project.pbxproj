@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		07F02A121C4F93FB00D5C5BE /* DMBackgroundColorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F02A111C4F93FB00D5C5BE /* DMBackgroundColorView.m */; };
 		89D6B45C18C91F0C006465EC /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89D6B45B18C91F0C006465EC /* Cocoa.framework */; };
 		89D6B46618C91F0C006465EC /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 89D6B46418C91F0C006465EC /* InfoPlist.strings */; };
 		89D6B46818C91F0C006465EC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 89D6B46718C91F0C006465EC /* main.m */; };
@@ -39,6 +40,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		07F02A101C4F93F400D5C5BE /* DMBackgroundColorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMBackgroundColorView.h; sourceTree = "<group>"; };
+		07F02A111C4F93FB00D5C5BE /* DMBackgroundColorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMBackgroundColorView.m; sourceTree = "<group>"; };
 		89D6B45818C91F0C006465EC /* Screen Capture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Screen Capture.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		89D6B45B18C91F0C006465EC /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		89D6B45E18C91F0C006465EC /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -216,6 +219,8 @@
 		89FA815B18CA6A8200AE95B3 /* Overlay */ = {
 			isa = PBXGroup;
 			children = (
+				07F02A101C4F93F400D5C5BE /* DMBackgroundColorView.h */,
+				07F02A111C4F93FB00D5C5BE /* DMBackgroundColorView.m */,
 				89FA815C18CA949900AE95B3 /* LNOverlayView.h */,
 				89FA815D18CA949900AE95B3 /* LNOverlayView.m */,
 			);
@@ -327,6 +332,7 @@
 				89D6B46F18C91F0C006465EC /* LNCaptureAppDelegate.m in Sources */,
 				89D6B49718C923F2006465EC /* LNCapturePanel.m in Sources */,
 				89D6B46818C91F0C006465EC /* main.m in Sources */,
+				07F02A121C4F93FB00D5C5BE /* DMBackgroundColorView.m in Sources */,
 				89D6B49318C9224F006465EC /* LNCaptureWindowController.m in Sources */,
 				89FA814918C9467700AE95B3 /* LNGIFConverter.m in Sources */,
 			);

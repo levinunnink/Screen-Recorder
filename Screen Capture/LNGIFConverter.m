@@ -39,7 +39,6 @@ NSString* const kLNGIFCreationProgressMaxValueKey = @"LNGIFCreationProgressMaxVa
     
     NSURL *saveURL = [NSURL fileURLWithPath:[directory stringByAppendingPathComponent:filename]];
     if([self FFMPEGPathExists]) {
-        DLOG(@"Executing FFMPEG");
         [self executeFFMPEGTaskWithArgs:@[@"-i", filePath.path, @"-pix_fmt", @"rgb24", @"-r", @"10", @"-f", @"gif", saveURL.path]];
         if ([self GIFTaskExists]) {
             [self executeGIFTaskWithArgs:@[@"-o", saveURL.path, @"-O3", @"--careful",@"--no-comments",@"--no-names",@"--same-delay",@"--same-loopcount", saveURL.path]];
