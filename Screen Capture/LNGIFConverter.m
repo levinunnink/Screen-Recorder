@@ -40,10 +40,25 @@ NSString* const kLNGIFCreationProgressMaxValueKey = @"LNGIFCreationProgressMaxVa
     NSURL *saveURL = [NSURL fileURLWithPath:[directory stringByAppendingPathComponent:filename]];
     if([self FFMPEGPathExists]) {
         DLOG(@"Executing FFMPEG");
-        [self executeFFMPEGTaskWithArgs:@[@"-i", filePath.path, @"-pix_fmt", @"rgb24", @"-r", @"10", @"-f", @"gif", saveURL.path]];
-        if ([self GIFTaskExists]) {
-            [self executeGIFTaskWithArgs:@[@"-o", saveURL.path, @"-O3", @"--careful",@"--no-comments",@"--no-names",@"--same-delay",@"--same-loopcount", saveURL.path]];
-        }
+        
+        NSString *palletteName = [[NSString randomString] stringByAppendingPathExtension:@"png"];
+        palletteName = [NSTemporaryDirectory() stringByAppendingPathComponent:palletteName];
+
+        NSString *optimGif = [NSTemporaryDirectory() stringByAppendingPathComponent:[[NSString randomString] stringByAppendingPathExtension:@"gif"]];
+        
+        
+        DLOG(@"Building Pallette");
+
+        //Build pallete
+        [self executeFFMPEGTaskWithArgs:@[@"-i", filePath.path, @"-y", @"-vf", @"fps=10,scale=-1:-1:flags=lanczos,palettegen", palletteName]];
+        
+//        [self executeFFMPEGTaskWithArgs:@[@"-i", filePath.path, @"-pix_fmt", @"rgb24", @"-r", @"10", @"-f", @"gif", saveURL.path]];
+        
+        [self executeFFMPEGTaskWithArgs:@[@"-i", filePath.path, @"-i", palletteName, @"-y", @"-lavfi", @"fps=10,scale=-1:-1:flags=lanczos [x]; [x][1:v] paletteuse", @"-f", @"gif", saveURL.path]];
+        
+//        if ([self GIFTaskExists]) {
+//            [self executeGIFTaskWithArgs:@[@"-o", optimGif, @"-O3", @"--careful",@"--no-comments",@"--no-names",@"--same-delay",@"--same-loopcount", saveURL.path]];
+//        }
         return saveURL;
     }
     
@@ -287,6 +302,8 @@ NSString* const kLNGIFCreationProgressMaxValueKey = @"LNGIFCreationProgressMaxVa
     ffmpegTask.launchPath = launchPath;
     ffmpegTask.arguments = args;
     [ffmpegTask launch];
+    
+    DLOG(@"Running Task: %@ %@ %@", ffmpegTask, launchPath, args);
     
     // Kill task if runs for more than 1 minute
     NSDate *terminateDate = [[NSDate date] dateByAddingTimeInterval:60.0];

@@ -13,6 +13,7 @@
 
 - (void)beginCaptureForScreen:(NSScreen*)screen inRect:(NSRect)rect;
 - (void)endScreenCapture;
+- (void)cancelScreenCapture;
 - (void)captureRectTooSmall;
 - (void)captureRectClickOutside;
 
@@ -31,6 +32,7 @@
 
 - (void)beginScreenCaptureForScreen:(NSScreen*)screen;
 - (void)endScreenCapture;
+- (void)cancelRecording:(id)sender;
 - (void)stopRecording:(id)sender;
 
 @end

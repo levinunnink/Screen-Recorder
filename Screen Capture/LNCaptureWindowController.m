@@ -83,6 +83,13 @@
     [self.captureDelegate endScreenCapture];
 }
 
+- (void)cancelRecording:(id)sender
+{
+    self.window.ignoresMouseEvents = NO;
+    [self endScreenCapture];
+    [self.captureDelegate cancelScreenCapture];
+}
+
 #pragma mark NSWindowDelegate
 
 - (BOOL)windowShouldClose:(id)sender
