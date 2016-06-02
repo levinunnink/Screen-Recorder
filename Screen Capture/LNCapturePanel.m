@@ -44,7 +44,6 @@
 
 - (void)setCropRect:(NSRect)cropRect
 {
-    DMARK;
     _cropRect = cropRect;
     self.cropScreen.frame = cropRect;
 }

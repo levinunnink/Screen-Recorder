@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import <LNCapturePanel.h>
+#import "LNCapturePanel.h"
 
 @protocol SCCaptureDelegate <NSObject>
 

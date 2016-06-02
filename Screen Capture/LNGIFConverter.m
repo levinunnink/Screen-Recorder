@@ -43,9 +43,6 @@ NSString* const kLNGIFCreationProgressMaxValueKey = @"LNGIFCreationProgressMaxVa
         
         NSString *palletteName = [[NSString randomString] stringByAppendingPathExtension:@"png"];
         palletteName = [NSTemporaryDirectory() stringByAppendingPathComponent:palletteName];
-
-        NSString *optimGif = [NSTemporaryDirectory() stringByAppendingPathComponent:[[NSString randomString] stringByAppendingPathExtension:@"gif"]];
-        
         
         DLOG(@"Building Pallette");
 
