@@ -41,7 +41,7 @@ NSString* const kLNGIFCreationProgressMaxValueKey = @"LNGIFCreationProgressMaxVa
     if([self FFMPEGPathExists]) {
         DLOG(@"Executing FFMPEG");
         
-        NSString *palletteName = [[NSString randomString] stringByAppendingPathExtension:@"png"];
+        NSString *palletteName = [[[NSProcessInfo processInfo] globallyUniqueString] stringByAppendingPathExtension:@"png"];
         palletteName = [NSTemporaryDirectory() stringByAppendingPathComponent:palletteName];
         
         DLOG(@"Building Pallette");

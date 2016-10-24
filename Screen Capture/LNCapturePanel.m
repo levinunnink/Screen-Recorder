@@ -44,6 +44,7 @@
 
 - (void)setCropRect:(NSRect)cropRect
 {
+    NSLog(@"setCropRect %@", NSStringFromRect(cropRect));
     _cropRect = cropRect;
     self.cropScreen.frame = cropRect;
 }
