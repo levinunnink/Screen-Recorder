@@ -69,7 +69,7 @@
 
 @implementation LNCapturePanel
 
-- (id)initWithContentRect:(NSRect)contentRect styleMask:(NSUInteger)aStyle
+- (id)initWithContentRect:(NSRect)contentRect styleMask:(NSWindowStyleMask)aStyle
                   backing:(NSBackingStoreType)bufferingType defer:(BOOL)flag
 {
     self = [super initWithContentRect:NSZeroRect styleMask:aStyle
