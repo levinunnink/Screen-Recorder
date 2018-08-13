@@ -7,20 +7,19 @@
 //
 
 #import "LNCapturePanel.h"
-#import "DMBackgroundColorView.h"
 
 #import <QuartzCore/QuartzCore.h>
 
 @interface SCCapturePanelBackgroundView : NSView
 
 @property (nonatomic, assign) NSRect cropRect;
-@property (nonatomic, weak) DMBackgroundColorView *cropScreen;
-
+@property (nonatomic, strong) CAShapeLayer *cropLine;
 @end
+
 
 @interface LNCapturePanel ()
 
-- (SCCapturePanelBackgroundView*)bgView;
+@property (strong) SCCapturePanelBackgroundView* bgView;
 
 @end
 
@@ -29,14 +28,12 @@
 - (id) initWithFrame:(NSRect)frameRect
 {
     self = [super initWithFrame:frameRect];
-
+    [self setWantsLayer:YES];
+    
     if (self) {
+        self.layer.backgroundColor = [NSColor colorWithWhite:0.0 alpha:0.5].CGColor;
         [self setAutoresizingMask:NSViewHeightSizable | NSViewWidthSizable];
         [self setAutoresizesSubviews:YES];
-        DMBackgroundColorView *crop = [[DMBackgroundColorView alloc] initWithFrame:CGRectZero];
-        crop.backgroundColor = [NSColor clearColor];
-        [self addSubview:crop];
-        self.cropScreen = crop;
     }
     
     return self;
@@ -44,9 +41,44 @@
 
 - (void)setCropRect:(NSRect)cropRect
 {
-    NSLog(@"setCropRect %@", NSStringFromRect(cropRect));
+    if(cropRect.size.height == 0 || cropRect.size.width == 0) {
+//        self.layer.mask = nil;
+//        [self.cropLine setHidden:YES];
+        return;
+    }
     _cropRect = cropRect;
-    self.cropScreen.frame = cropRect;
+    [CATransaction begin];
+    [CATransaction setDisableActions: YES];
+    
+    CAShapeLayer *maskLayer;
+    if(self.layer.mask) {
+        maskLayer = self.layer.mask;
+    } else {
+        maskLayer = [CAShapeLayer layer];
+    }
+    CGMutablePathRef maskPath = CGPathCreateMutable();
+    CGPathAddRect(maskPath, NULL, self.bounds); // this line is new
+    CGPathAddPath(maskPath, nil, CGPathCreateWithRect(cropRect, nil) );
+    [maskLayer setPath:maskPath];
+    maskLayer.fillRule = kCAFillRuleEvenOdd;         // this line is new
+    CGPathRelease(maskPath);
+    self.layer.mask = maskLayer;
+    
+    if(!self.cropLine) {
+        self.cropLine = [CAShapeLayer layer];
+        self.cropLine.fillColor = [NSColor whiteColor].CGColor;
+        [self.layer addSublayer:self.cropLine];
+    }
+
+    self.cropLine.path = CGPathCreateWithRect((CGRect){
+        cropRect.origin.x - 1,
+        cropRect.origin.y - 1,
+        cropRect.size.width + 2,
+        cropRect.size.height + 2,
+    }, nil);
+    
+    [CATransaction commit];
+
 }
 
 - (void)mouseEntered:(NSEvent *)theEvent
@@ -76,18 +108,22 @@
                               backing:NSBackingStoreBuffered defer:NO];
     [self setFloatingPanel:YES];
     [self setCollectionBehavior:NSWindowCollectionBehaviorCanJoinAllSpaces | NSWindowCollectionBehaviorFullScreenAuxiliary];
-    [self setBackgroundColor:[NSColor colorWithDeviceWhite:0.0 alpha:0.5]];
+    [self setBackgroundColor:[NSColor clearColor]];
     [self setMovableByWindowBackground:NO];
     [self setExcludedFromWindowsMenu:YES];
     [self setAlphaValue:1.0];
     [self setOpaque:NO];
     [self setHasShadow:NO];
     [self setHidesOnDeactivate:NO];
-    [self setLevel:kCGMaximumWindowLevel];
+    [self setLevel:NSStatusWindowLevel];
     [self setRestorable:NO];
     [self disableSnapshotRestoration];
     
-    [self setContentView:[[SCCapturePanelBackgroundView alloc] initWithFrame:NSZeroRect]];
+    self.bgView = [[SCCapturePanelBackgroundView alloc] initWithFrame:contentRect];
+    self.bgView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    [self.contentView addSubview:self.bgView];
+    
+//    [self setContentView:[[SCCapturePanelBackgroundView alloc] initWithFrame:NSZeroRect]];
     
     return self;
 }
@@ -126,10 +162,10 @@
     _cropRect = NSIntegralRect(cropRect);
     self.bgView.cropRect = _cropRect;
 }
-
-- (SCCapturePanelBackgroundView*)bgView
-{
-    return (SCCapturePanelBackgroundView*)self.contentView;
-}
+//
+//- (SCCapturePanelBackgroundView*)bgView
+//{
+//    return (SCCapturePanelBackgroundView*)self.contentView;
+//}
 
 @end

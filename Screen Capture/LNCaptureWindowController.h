@@ -28,7 +28,7 @@
 @property (nonatomic, strong) NSString* overlayMessage;
 @property (nonatomic, readonly) LNCapturePanel *capturePanel;
 
-+ (LNCaptureWindowController*)instance;
+//+ (LNCaptureWindowController*)instance;
 
 - (void)beginScreenCaptureForScreen:(NSScreen*)screen;
 - (void)endScreenCapture;

@@ -56,13 +56,13 @@ CGFloat LNOverlayViewStandardRadius = 10.0;
     NSBezierPath *bezelPath = [NSBezierPath bezierPathWithRoundedRect:self.bounds
                                                               xRadius:self.bezelRadius
                                                               yRadius:self.bezelRadius];
-    [[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeSourceOver];
+    [[NSGraphicsContext currentContext] setCompositingOperation:NSCompositingOperationSourceOver];
     [bezelPath fill];
 }
 
 - (void)drawLabel {
     NSMutableParagraphStyle *paragraph = [[NSMutableParagraphStyle alloc] init];
-    paragraph.alignment = NSCenterTextAlignment;
+    paragraph.alignment = NSTextAlignmentCenter;
     
     NSAttributedString *labelToDraw = [[NSAttributedString alloc] initWithString:self.label
                                                                       attributes:@{NSFontAttributeName: [NSFont systemFontOfSize:30],

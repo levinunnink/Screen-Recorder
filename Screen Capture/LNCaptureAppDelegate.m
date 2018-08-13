@@ -23,21 +23,22 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    [LNCaptureWindowController instance].captureDelegate = self;
+    self.captureWindow = [[LNCaptureWindowController alloc] init];
+    self.captureWindow.captureDelegate = self;
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
     NSLog(@"Capturing screen");
-    if (![LNCaptureWindowController instance].recording) {
-        [[LNCaptureWindowController instance] beginScreenCaptureForScreen:[NSScreen mainScreen]];
+    if (!self.captureWindow.recording) {
+        [self.captureWindow beginScreenCaptureForScreen:[NSScreen mainScreen]];
     }
 }
 
 - (void)applicationDidResignActive:(NSNotification *)notification
 {
-    if (![LNCaptureWindowController instance].recording) {
-        [[LNCaptureWindowController instance] endScreenCapture];
+    if (!self.captureWindow.recording) {
+        [self.captureWindow endScreenCapture];
     }
 }
 

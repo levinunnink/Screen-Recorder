@@ -25,39 +25,69 @@
 
 @implementation LNCaptureWindowController
 
-+ (LNCaptureWindowController*)instance
+//+ (LNCaptureWindowController*)instance
+//{
+//
+//    static LNCaptureWindowController* instance = nil;
+//    static dispatch_once_t onceToken;
+//    dispatch_once(&onceToken, ^{
+//        LNCapturePanel* panel = [[LNCapturePanel alloc]
+//                                        initWithContentRect:NSZeroRect styleMask: NSWindowStyleMaskNonactivatingPanel|NSWindowStyleMaskBorderless
+//                                        backing:NSBackingStoreBuffered defer:NO];
+//        instance = [[LNCaptureWindowController alloc] initWithWindow:panel];
+//        panel.delegate = instance;
+//
+//        NSButton *confirm = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 160, 25)];
+//        [confirm setCell:[[LNCaptureButtonCell alloc] init]];
+//        [confirm setTitle: @"Start Recording"];
+//        [confirm setButtonType:NSMomentaryLightButton]; //Set what type button You want
+//        [confirm setBezelStyle:NSRoundedBezelStyle]; //Set what style You want
+//        confirm.target = instance;
+//        confirm.action = @selector(startRecording:);
+//        instance.confirmationButton = confirm;
+//
+//        NSButton *stop = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 160, 25)];
+//        //[stop setCell:[[LNCaptureButtonCell alloc] init]];
+//        [stop setTitle: @"Stop Recording"];
+//        [stop setKeyEquivalent:@"\E"];
+//        [stop setButtonType:NSMomentaryLightButton]; //Set what type button You want
+//        [stop setBezelStyle:NSRoundedBezelStyle]; //Set what style You want
+//        stop.target = instance;
+//        stop.action = @selector(stopRecording:);
+//        instance.stopRecordingButton = stop;
+//    });
+//
+//    return instance;
+//}
+
+- (id)init
 {
+    LNCapturePanel* panel = [[LNCapturePanel alloc]
+                             initWithContentRect:NSZeroRect styleMask: NSWindowStyleMaskNonactivatingPanel|NSWindowStyleMaskBorderless
+                             backing:NSBackingStoreBuffered defer:NO];
+    self = [super initWithWindow:panel];
+    panel.delegate = self;
     
-    static LNCaptureWindowController* instance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        LNCapturePanel* panel = [[LNCapturePanel alloc]
-                                        initWithContentRect:NSZeroRect styleMask: NSNonactivatingPanelMask
-                                        backing:NSBackingStoreBuffered defer:NO];
-        instance = [[LNCaptureWindowController alloc] initWithWindow:panel];
-        panel.delegate = instance;
-        
-        NSButton *confirm = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 160, 25)];
-        [confirm setCell:[[LNCaptureButtonCell alloc] init]];
-        [confirm setTitle: @"Start Recording"];
-        [confirm setButtonType:NSMomentaryLightButton]; //Set what type button You want
-        [confirm setBezelStyle:NSRoundedBezelStyle]; //Set what style You want
-        confirm.target = instance;
-        confirm.action = @selector(startRecording:);
-        instance.confirmationButton = confirm;
-        
-        NSButton *stop = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 160, 25)];
-        //[stop setCell:[[LNCaptureButtonCell alloc] init]];
-        [stop setTitle: @"Stop Recording"];
-        [stop setKeyEquivalent:@"\E"];
-        [stop setButtonType:NSMomentaryLightButton]; //Set what type button You want
-        [stop setBezelStyle:NSRoundedBezelStyle]; //Set what style You want
-        stop.target = instance;
-        stop.action = @selector(stopRecording:);
-        instance.stopRecordingButton = stop;
-    });
+    NSButton *confirm = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 160, 25)];
+    [confirm setCell:[[LNCaptureButtonCell alloc] init]];
+    [confirm setTitle: @"Start Recording"];
+    [confirm setButtonType:NSMomentaryLightButton]; //Set what type button You want
+    [confirm setBezelStyle:NSRoundedBezelStyle]; //Set what style You want
+    confirm.target = self;
+    confirm.action = @selector(startRecording:);
+    self.confirmationButton = confirm;
     
-    return instance;
+    NSButton *stop = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 160, 25)];
+    //[stop setCell:[[LNCaptureButtonCell alloc] init]];
+    [stop setTitle: @"Stop Recording"];
+    [stop setKeyEquivalent:@"\E"];
+    [stop setButtonType:NSMomentaryLightButton]; //Set what type button You want
+    [stop setBezelStyle:NSRoundedBezelStyle]; //Set what style You want
+    stop.target = self;
+    stop.action = @selector(stopRecording:);
+    self.stopRecordingButton = stop;
+    
+    return self;
 }
 
 -(BOOL)acceptsFirstResponder
@@ -85,6 +115,7 @@
 
 - (void)cancelRecording:(id)sender
 {
+    DMARK;
     self.window.ignoresMouseEvents = NO;
     [self endScreenCapture];
     [self.captureDelegate cancelScreenCapture];
@@ -111,7 +142,6 @@
 - (void)beginScreenCaptureForScreen:(NSScreen *)screen
 {
     [[NSCursor crosshairCursor] push];
-    
     
     self.recording = NO;
     [self.confirmationButton setHidden:YES];
@@ -173,7 +203,7 @@
 
 - (void)mouseUp:(NSEvent *)theEvent
 {
-    
+    DMARK;
     if (_recording) return;
     
     NSPoint curPoint = [theEvent locationInWindow];
@@ -193,8 +223,7 @@
         return;
     }
     
-    if (!_recording)
-        [self showConfirmationButton];
+    if (!_recording) [self showConfirmationButton];
 }
 
 - (void)keyDown:(NSEvent *)theEvent
@@ -219,7 +248,8 @@
 
 - (void)showConfirmationButton
 {
-    
+    DMARK;
+    DLOG(@"self.confirmationButton %@", self.confirmationButton);
     [self.capturePanel.contentView addSubview:self.confirmationButton];
     [self.confirmationButton setFrame:(NSRect){
         self.capturePanel.cropRect.origin.x + (self.capturePanel.cropRect.size.width / 2) - (self.confirmationButton.frame.size.width / 2),
