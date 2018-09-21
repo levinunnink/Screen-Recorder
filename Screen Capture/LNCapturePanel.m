@@ -58,7 +58,9 @@
     }
     CGMutablePathRef maskPath = CGPathCreateMutable();
     CGPathAddRect(maskPath, NULL, self.bounds); // this line is new
-    CGPathAddPath(maskPath, nil, CGPathCreateWithRect(cropRect, nil) );
+    CGPathRef cropRectPath = CGPathCreateWithRect(cropRect, nil);
+    CGPathAddPath(maskPath, nil, cropRectPath );
+    CGPathRelease(cropRectPath);
     [maskLayer setPath:maskPath];
     maskLayer.fillRule = kCAFillRuleEvenOdd;         // this line is new
     CGPathRelease(maskPath);
@@ -70,12 +72,16 @@
         [self.layer addSublayer:self.cropLine];
     }
 
-    self.cropLine.path = CGPathCreateWithRect((CGRect){
+    CGPathRef linePath = CGPathCreateWithRect((CGRect){
         cropRect.origin.x - 1,
         cropRect.origin.y - 1,
         cropRect.size.width + 2,
         cropRect.size.height + 2,
     }, nil);
+    
+    self.cropLine.path = linePath;
+    
+    CGPathRelease(linePath);
     
     [CATransaction commit];
 
