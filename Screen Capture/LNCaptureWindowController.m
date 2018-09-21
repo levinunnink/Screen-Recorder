@@ -102,8 +102,11 @@
     self.recording = YES;
     self.window.ignoresMouseEvents = YES;
     [self.confirmationButton setHidden:YES];
-    [self showStopRecordingButton];
-    [self.captureDelegate beginCaptureForScreen:self.capturePanel.screen inRect:self.capturePanel.cropRect];
+    // We do this to prevent the button showing
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.02 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self showStopRecordingButton];
+        [self.captureDelegate beginCaptureForScreen:self.capturePanel.screen inRect:self.capturePanel.cropRect];
+    });
 }
 
 - (void)stopRecording:(id)sender
