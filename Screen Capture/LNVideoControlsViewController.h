@@ -17,6 +17,8 @@ typedef enum LNCaptureOptionTags {
     LNAudioMic,
 } LNCaptureOptionTags;
 
+#define kLNVideoControllerBeginRecordingNotification @"LNVideoControllerBeginRecordingNotification"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface LNVideoControlsViewController : NSViewController

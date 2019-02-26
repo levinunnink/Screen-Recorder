@@ -13,11 +13,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface LNCaptureSessionOptions : NSObject
 
-+(LNCaptureSessionOptions*)currentSession;
++(LNCaptureSessionOptions*)currentOptions;
 
 @property (strong, nullable) AVCaptureDevice *mic;
 @property (assign) BOOL showMouseClicks;
 @property (assign) int startDelay;
+@property (assign) CGRect captureRect;
 
 @end
 

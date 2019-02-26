@@ -7,9 +7,12 @@
 //
 
 #import "LNCaptureWindowController.h"
+#import "LNVideoControlsViewController.h"
 #import "LNCapturePanel.h"
 #import "LNOverlayView.h"
 #import "LNCaptureButtonCell.h"
+#import "LNCaptureSessionOptions.h"
+#import "LNCaptureSession.h"
 
 #define kMinCropSize (NSSize){ 60 , 60 }
 
@@ -51,6 +54,8 @@
     stop.action = @selector(stopRecording:);
     self.stopRecordingButton = stop;
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startRecording:) name:kLNVideoControllerBeginRecordingNotification object:nil];
+    
     return self;
 }
 
@@ -67,18 +72,21 @@
     [self.capturePanel setIsRecording:YES];
     self.window.ignoresMouseEvents = YES;
     [self.confirmationButton setHidden:YES];
+    [LNCaptureSessionOptions currentOptions].captureRect = self.capturePanel.cropRect;
     // We do this to prevent the button showing
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.02 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self showStopRecordingButton];
-        [self.captureDelegate beginCaptureForScreen:self.capturePanel.screen inRect:self.capturePanel.cropRect];
+        [[LNCaptureSession currentSession] beginRecordingWithOptions:[LNCaptureSessionOptions currentOptions]];
     });
 }
 
 - (IBAction)stopRecording:(id)sender
 {
     self.window.ignoresMouseEvents = NO;
-    [self endScreenCapture];
-    [self.captureDelegate endScreenCapture];
+    [[LNCaptureSession currentSession] endRecordingComplete:^(NSError *error, NSURL *recordingURL) {
+        if(error) return DLOG(@"Got error while recording %@", error);
+        [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[recordingURL]];
+    }];
 }
 
 - (void)cancelRecording:(id)sender
@@ -157,61 +165,6 @@
 }
 
 #pragma mark NSRsponder
-
-- (void)mouseDown:(NSEvent *)theEvent
-{
-    
-    if (_recording) return;
-    
-    self.mouseDidDrag = NO;
-    
-    [self.confirmationButton setHidden:YES];
-    self.startPoint = [theEvent locationInWindow];
-    self.capturePanel.cropRect = CGRectMake(self.startPoint.x, self.startPoint.y, 0, 0);
-}
-
-- (void)mouseDragged:(NSEvent *)theEvent
-{
-    
-    if (_recording) return;
-    
-    self.mouseDidDrag = YES;
-    
-    NSPoint curPoint = [theEvent locationInWindow];
-    CGRect cropRect = (CGRect){
-                          MIN(_startPoint.x, curPoint.x),
-                          MIN(_startPoint.y, curPoint.y),
-                          fabs(_startPoint.x - curPoint.x),
-                          fabs(_startPoint.y - curPoint.y)
-                        };
-    
-    self.capturePanel.cropRect = cropRect;
-}
-
-- (void)mouseUp:(NSEvent *)theEvent
-{
-    DMARK;
-    if (_recording) return;
-    
-    NSPoint curPoint = [theEvent locationInWindow];
-    
-    if (self.capturePanel.cropRect.size.width < kMinCropSize.width   ||
-        self.capturePanel.cropRect.size.height < kMinCropSize.height ||
-        (!NSPointInRect(curPoint, self.capturePanel.cropRect) && !_mouseDidDrag)
-        ) {
-
-        [self.captureDelegate captureRectClickOutside];
-        
-        if (_recording) {
-            [self stopRecording:nil];
-        } else {
-            [self endScreenCapture];
-        }
-        return;
-    }
-    
-    if (!_recording) [self showConfirmationButton];
-}
 
 - (void)keyDown:(NSEvent *)theEvent
 {

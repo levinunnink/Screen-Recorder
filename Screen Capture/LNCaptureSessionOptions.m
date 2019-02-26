@@ -10,7 +10,7 @@
 
 @implementation LNCaptureSessionOptions
 
-+ (LNCaptureSessionOptions*)currentSession
++ (LNCaptureSessionOptions*)currentOptions
 {
     static LNCaptureSessionOptions* instance = nil;
     static dispatch_once_t onceToken;

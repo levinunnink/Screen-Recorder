@@ -36,25 +36,25 @@
     
     switch (item.tag) {
         case LNTimerNone:
-            [LNCaptureSessionOptions currentSession].startDelay = 0;
+            [LNCaptureSessionOptions currentOptions].startDelay = 0;
             break;
         case LNTimerFive:
-            [LNCaptureSessionOptions currentSession].startDelay = 5;
+            [LNCaptureSessionOptions currentOptions].startDelay = 5;
             break;
         case LNTimerTen:
-            [LNCaptureSessionOptions currentSession].startDelay = 10;
+            [LNCaptureSessionOptions currentOptions].startDelay = 10;
             break;
         case LNAudioNone:
             self.selectedMicID = nil;
-            [LNCaptureSessionOptions currentSession].mic = nil;
+            [LNCaptureSessionOptions currentOptions].mic = nil;
             break;
         case LNShowMouseClicks:
-            [LNCaptureSessionOptions currentSession].showMouseClicks = ![LNCaptureSessionOptions currentSession].showMouseClicks;
+            [LNCaptureSessionOptions currentOptions].showMouseClicks = ![LNCaptureSessionOptions currentOptions].showMouseClicks;
             break;
         case LNAudioMic: {
             for (AVCaptureDevice *mic in allDevices) {
                 if ([mic.localizedName isEqualToString:item.title]) {
-                    [LNCaptureSessionOptions currentSession].mic = mic;
+                    [LNCaptureSessionOptions currentOptions].mic = mic;
                     self.selectedMicID = mic.uniqueID;
                 }
             }
@@ -70,8 +70,10 @@
 - (IBAction)beginRecording:(id)sender
 {
     [self requestVideoPermissionComplete:^(){
-        [self countdown:[LNCaptureSessionOptions currentSession].startDelay complete:^(){
-            
+        DLOG(@"Starting countdown");
+        [self countdown:[LNCaptureSessionOptions currentOptions].startDelay complete:^(){
+            DLOG(@"Sending notification %@", kLNVideoControllerBeginRecordingNotification);
+            [[NSNotificationCenter defaultCenter] postNotificationName:kLNVideoControllerBeginRecordingNotification object:nil];
         }];
     }];
 }
@@ -96,11 +98,11 @@
         [self.captureOptionsMenu insertItem:micItem atIndex:[self.captureOptionsMenu indexOfItem:noneAudioItem]];
     }
 
-    [self.captureOptionsMenu itemWithTag:LNShowMouseClicks].state = [LNCaptureSessionOptions currentSession].showMouseClicks ? NSOnState : NSOffState;
-    [self.captureOptionsMenu itemWithTag:LNTimerNone].state = [LNCaptureSessionOptions currentSession].startDelay == 0 ? NSOnState : NSOffState;
-    [self.captureOptionsMenu itemWithTag:LNTimerFive].state = [LNCaptureSessionOptions currentSession].startDelay == 5 ? NSOnState : NSOffState;
-    [self.captureOptionsMenu itemWithTag:LNTimerTen].state = [LNCaptureSessionOptions currentSession].startDelay == 10 ? NSOnState : NSOffState;
-    if(![LNCaptureSessionOptions currentSession].mic) {
+    [self.captureOptionsMenu itemWithTag:LNShowMouseClicks].state = [LNCaptureSessionOptions currentOptions].showMouseClicks ? NSOnState : NSOffState;
+    [self.captureOptionsMenu itemWithTag:LNTimerNone].state = [LNCaptureSessionOptions currentOptions].startDelay == 0 ? NSOnState : NSOffState;
+    [self.captureOptionsMenu itemWithTag:LNTimerFive].state = [LNCaptureSessionOptions currentOptions].startDelay == 5 ? NSOnState : NSOffState;
+    [self.captureOptionsMenu itemWithTag:LNTimerTen].state = [LNCaptureSessionOptions currentOptions].startDelay == 10 ? NSOnState : NSOffState;
+    if(![LNCaptureSessionOptions currentOptions].mic) {
         [self.captureOptionsMenu itemWithTag:LNAudioNone].state = NSOnState;
     } else {
         [self.captureOptionsMenu itemWithTag:LNAudioNone].state = NSOffState;
@@ -160,19 +162,22 @@
 
 - (void)countdown:(int)seconds complete:(void (^)())complete
 {
-    if(seconds == 0) return complete();
-    __block int currentSeconds = seconds;
-    self.countdownTimer = [NSTimer scheduledTimerWithTimeInterval:1 repeats:YES block:^(NSTimer *timer) {
-        if(currentSeconds == 0) {
-            [timer invalidate];
-            self.recordButton.enabled = YES;
-            [self.recordButton setTitle:@"Record"];
-            return complete();
-        }
-        self.recordButton.enabled = NO;
-        [self.recordButton setTitle:[NSString stringWithFormat:@"%d s...", currentSeconds]];
-        currentSeconds = currentSeconds - 1;
-    }];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if(seconds == 0) return complete();
+        __block int currentSeconds = seconds;
+        self.countdownTimer = [NSTimer scheduledTimerWithTimeInterval:1 repeats:YES block:^(NSTimer *timer) {
+            DLOG(@"Current seconds %d", currentSeconds);
+            if(currentSeconds == 0) {
+                [timer invalidate];
+                self.recordButton.enabled = YES;
+                [self.recordButton setTitle:@"Record"];
+                return complete();
+            }
+            self.recordButton.enabled = NO;
+            [self.recordButton setTitle:[NSString stringWithFormat:@"%d s...", currentSeconds]];
+            currentSeconds = currentSeconds - 1;
+        }];
+    });
 }
 
 @end

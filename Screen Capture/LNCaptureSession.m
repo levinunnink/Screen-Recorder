@@ -1,49 +1,35 @@
 //
-//  SCAppDelegate.m
+//  LNCaptureSession.m
 //  Screen Capture
 //
-//  Created by Levi Nunnink on 3/6/14.
-//  Copyright (c) 2014 Levi Nunnink. All rights reserved.
+//  Created by Levi Nunnink on 2/26/19.
+//  Copyright © 2019 Levi Nunnink. All rights reserved.
 //
 
-#import "LNCaptureAppDelegate.h"
-#import "LNCaptureWindowController.h"
-#import "LNGIFConverter.h"
+#import "LNCaptureSession.h"
 #import <AVFoundation/AVFoundation.h>
 
-@interface LNCaptureAppDelegate () <SCCaptureDelegate,AVCaptureFileOutputRecordingDelegate>
+@interface LNCaptureSession () <AVCaptureFileOutputRecordingDelegate>
 
-@property (nonatomic, strong) LNCaptureWindowController *captureWindow;
 @property (nonatomic, strong) AVCaptureSession *mSession;
 @property (nonatomic, strong) AVCaptureMovieFileOutput *mMovieFileOutput;
+@property (nonatomic, copy) void (^complete)(NSError *error, NSURL *fileURL);
 
 @end
 
-@implementation LNCaptureAppDelegate
+@implementation LNCaptureSession
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
++ (LNCaptureSession*)currentSession
 {
-    self.captureWindow = [[LNCaptureWindowController alloc] init];
-    self.captureWindow.captureDelegate = self;
+    static LNCaptureSession* instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [[self alloc] init];
+    });
+    return instance;
 }
 
-- (void)applicationDidBecomeActive:(NSNotification *)notification
-{
-    if (!self.captureWindow.recording) {
-        [self.captureWindow beginScreenCaptureForScreen:[NSScreen mainScreen]];
-    }
-}
-
-- (void)applicationDidResignActive:(NSNotification *)notification
-{
-    if (!self.captureWindow.recording) {
-        [self.captureWindow endScreenCapture];
-    }
-}
-
-#pragma mark SCCaptureDelegate
-
-- (void)beginCaptureForScreen:(NSScreen*)screen inRect:(NSRect)rect
+- (void)beginRecordingWithOptions:(LNCaptureSessionOptions *)options
 {
     // Create a capture session
     self.mSession = [[AVCaptureSession alloc] init];
@@ -58,8 +44,9 @@
     
     // Create a ScreenInput with the display and add it to the session
     AVCaptureScreenInput *input = [[AVCaptureScreenInput alloc] initWithDisplayID:displayId];
-    input.cropRect = rect;
-    input.capturesMouseClicks = YES;
+    input.cropRect = options.captureRect;
+    input.capturesMouseClicks = options.showMouseClicks;
+    DLOG(@"Crop Rect %@ %@", NSStringFromRect(input.cropRect), NSStringFromRect(options.captureRect));
     
     if ([self.mSession canAddInput:input])
         [self.mSession addInput:input];
@@ -68,6 +55,11 @@
     self.mMovieFileOutput = [[AVCaptureMovieFileOutput alloc] init];
     if ([self.mSession canAddOutput:self.mMovieFileOutput])
         [self.mSession addOutput:self.mMovieFileOutput];
+    
+    if(options.mic) {
+        AVCaptureDeviceInput *audioInput = [AVCaptureDeviceInput deviceInputWithDevice:options.mic error:nil];
+        if([self.mSession canAddInput:audioInput]) [self.mSession addInput:audioInput];
+    }
     
     // Start running the session
     [self.mSession startRunning];
@@ -90,28 +82,19 @@
 
 }
 
-- (void)endScreenCapture
+- (void)endRecordingComplete:(void (^ _Nullable)(NSError *, NSURL *))complete
 {
+    self.complete = complete;
     [self.mMovieFileOutput stopRecording];
-    NSURL *fileURL = self.mMovieFileOutput.outputFileURL;
-    [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[fileURL]];
-//    double delayInSeconds = 2.0;
-//    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-//    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-//        [[SCGIFConverter instance] convertFileAtPath:fileURL];
-//    });
-
 }
 
 #pragma mark AVCapDelegate
 
 - (void)captureOutput:(AVCaptureFileOutput *)captureOutput didFinishRecordingToOutputFileAtURL:(NSURL *)outputFileURL fromConnections:(NSArray *)connections error:(NSError *)error
 {
-    NSLog(@"Did finish recording to %@ due to error %@", [outputFileURL description], [error description]);
-    
-    // Stop running the session
+    DLOG(@"Did finish recording to %@ due to error %@", [outputFileURL description], [error description]);
     [self.mSession stopRunning];
-
+    self.complete(error, outputFileURL);
 }
 
 #pragma mark Private helpers
@@ -137,5 +120,6 @@
     
     return fileName;
 }
+
 
 @end

@@ -29,6 +29,7 @@
 
 @interface LNCapturePanel () {
     BOOL _isRecording;
+    CGRect _cropRect;
 }
 
 @property (strong) SCCapturePanelBackgroundView* bgView;
@@ -384,6 +385,11 @@
 {
     _cropRect = NSIntegralRect(cropRect);
     self.bgView.cropRect = _cropRect;
+}
+
+- (CGRect)cropRect
+{
+    return self.bgView.cropRect;
 }
 
 @end
