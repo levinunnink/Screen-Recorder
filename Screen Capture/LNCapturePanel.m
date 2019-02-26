@@ -20,6 +20,10 @@
 @property (strong) LNResizeHandle *topRightHandle;
 @property (strong) LNResizeHandle *bottomLeftHandle;
 @property (strong) LNResizeHandle *bottomRightHandle;
+@property (strong) LNResizeHandle *topHandle;
+@property (strong) LNResizeHandle *rightHandle;
+@property (strong) LNResizeHandle *leftHandle;
+@property (strong) LNResizeHandle *bottomHandle;
 @property (strong) CALayer *backgroundColorLayer;
 @property (assign) CGPoint startPoint;
 @property (assign) CGRect startRect;
@@ -48,14 +52,24 @@
         self.backgroundColorLayer.bounds = self.bounds;
         self.backgroundColorLayer.backgroundColor = [NSColor colorWithWhite:0.0 alpha:0.5].CGColor;
         [[self layer] addSublayer:self.backgroundColorLayer];
+
+        // 8 resize handles, y'all
         self.topLeftHandle = [LNResizeHandle handleWithPosition:LNResizePositionTopLeft];
         self.topRightHandle = [LNResizeHandle handleWithPosition:LNResizePositionTopRight];
         self.bottomLeftHandle = [LNResizeHandle handleWithPosition:LNResizePositionBottomLeft];
         self.bottomRightHandle = [LNResizeHandle handleWithPosition:LNResizePositionBottomRight];
+        self.topHandle = [LNResizeHandle handleWithPosition:LNResizePositionTop];
+        self.rightHandle = [LNResizeHandle handleWithPosition:LNResizePositionRight];
+        self.bottomHandle = [LNResizeHandle handleWithPosition:LNResizePositionBottom];
+        self.leftHandle = [LNResizeHandle handleWithPosition:LNResizePositionLeft];
         self.topLeftHandle.delegate = self;
         self.topRightHandle.delegate = self;
         self.bottomLeftHandle.delegate = self;
         self.bottomRightHandle.delegate = self;
+        self.topHandle.delegate = self;
+        self.rightHandle.delegate = self;
+        self.bottomHandle.delegate = self;
+        self.leftHandle.delegate = self;
     }
     
     return self;
@@ -76,6 +90,10 @@
     self.topRightHandle.position = CGPointMake(cropRect.origin.x + cropRect.size.width, cropRect.origin.y + cropRect.size.height);
     self.bottomLeftHandle.position = CGPointMake(cropRect.origin.x, cropRect.origin.y);
     self.bottomRightHandle.position = CGPointMake(cropRect.origin.x + cropRect.size.width, cropRect.origin.y);
+    self.topHandle.position = CGPointMake(cropRect.origin.x + (cropRect.size.width / 2), cropRect.origin.y + cropRect.size.height);
+    self.rightHandle.position = CGPointMake(cropRect.origin.x + cropRect.size.width, cropRect.origin.y + (cropRect.size.height / 2));
+    self.bottomHandle.position = CGPointMake(cropRect.origin.x + (cropRect.size.width / 2), cropRect.origin.y);
+    self.leftHandle.position = CGPointMake(cropRect.origin.x, cropRect.origin.y + (cropRect.size.height / 2));
     
     CAShapeLayer *maskLayer;
     if(self.layer.mask) {
@@ -108,6 +126,10 @@
     [self.layer addSublayer:self.topRightHandle];
     [self.layer addSublayer:self.bottomLeftHandle];
     [self.layer addSublayer:self.bottomRightHandle];
+    [self.layer addSublayer:self.topHandle];
+    [self.layer addSublayer:self.rightHandle];
+    [self.layer addSublayer:self.bottomHandle];
+    [self.layer addSublayer:self.leftHandle];
 
     CGPathRef linePath = CGPathCreateWithRect((CGRect){
         cropRect.origin.x - 1,
@@ -225,6 +247,30 @@
 - (void)handle:(LNResizeHandle*)sender pointDidChangeTo:(CGPoint)point;
 {
     CGRect bounding = self.cropRect;
+    
+    if (sender.resizeLocation == LNResizePositionTop) {
+        CGFloat initialY = bounding.origin.y;
+        bounding.size.height = point.y - initialY;
+        bounding.origin.y    = initialY;
+        return [self setCropRect:bounding];
+    }
+    
+    if (sender.resizeLocation == LNResizePositionBottom) {
+        bounding.size.height = bounding.size.height - (point.y - bounding.origin.y);
+        bounding.origin.y    = point.y;
+        return [self setCropRect:bounding];
+    }
+    
+    if (sender.resizeLocation == LNResizePositionRight) {
+        bounding.size.width = CGRectGetWidth(bounding) + (point.x - CGRectGetWidth(bounding) - CGRectGetMinX(bounding));
+        return [self setCropRect:bounding];
+    }
+    
+    if (sender.resizeLocation == LNResizePositionLeft) {
+        bounding.size.width = CGRectGetWidth(bounding) - (point.x - CGRectGetMinX(bounding));
+        bounding.origin.x = point.x;
+        return [self setCropRect:bounding];
+    }
     
     if (sender.resizeLocation == LNResizePositionTopLeft || sender.resizeLocation == LNResizePositionBottomLeft) {
         bounding.size.width = CGRectGetWidth(bounding) + (CGRectGetMinX(bounding) - point.x);
