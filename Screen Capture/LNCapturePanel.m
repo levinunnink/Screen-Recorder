@@ -392,4 +392,10 @@
     return self.bgView.cropRect;
 }
 
+- (void)performClose:(id)sender
+{
+    DMARK;
+    [self orderOut:sender];
+}
+
 @end

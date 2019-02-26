@@ -6,6 +6,20 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		89DC06692225F5180025550B /* Lint */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 89DC066A2225F5180025550B /* Build configuration list for PBXAggregateTarget "Lint" */;
+			buildPhases = (
+				89DC066D2225F5300025550B /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = Lint;
+			productName = Lint;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		89D6B45C18C91F0C006465EC /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89D6B45B18C91F0C006465EC /* Cocoa.framework */; };
 		89D6B46618C91F0C006465EC /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 89D6B46418C91F0C006465EC /* InfoPlist.strings */; };
@@ -334,6 +348,11 @@
 					89D6B47818C91F0C006465EC = {
 						TestTargetID = 89D6B45718C91F0C006465EC;
 					};
+					89DC06692225F5180025550B = {
+						CreatedOnToolsVersion = 10.0;
+						DevelopmentTeam = MZ25PHMY7Y;
+						ProvisioningStyle = Automatic;
+					};
 				};
 			};
 			buildConfigurationList = 89D6B45318C91F0C006465EC /* Build configuration list for PBXProject "Screen Capture" */;
@@ -351,6 +370,7 @@
 			targets = (
 				89D6B45718C91F0C006465EC /* Screen Capture */,
 				89D6B47818C91F0C006465EC /* Screen CaptureTests */,
+				89DC06692225F5180025550B /* Lint */,
 			);
 		};
 /* End PBXProject section */
@@ -378,6 +398,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		89DC066D2225F5300025550B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "source ~/.bash_profile\ncd ${SRCROOT}\nxcodebuild clean\nxcodebuild | xcpretty -r json-compilation-database\noclint-json-compilation-database -- -report-type xcode\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		89D6B45418C91F0C006465EC /* Sources */ = {
@@ -590,6 +630,24 @@
 			};
 			name = Release;
 		};
+		89DC066B2225F5180025550B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = MZ25PHMY7Y;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		89DC066C2225F5180025550B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = MZ25PHMY7Y;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -616,6 +674,15 @@
 			buildConfigurations = (
 				89D6B48D18C91F0C006465EC /* Debug */,
 				89D6B48E18C91F0C006465EC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		89DC066A2225F5180025550B /* Build configuration list for PBXAggregateTarget "Lint" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				89DC066B2225F5180025550B /* Debug */,
+				89DC066C2225F5180025550B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

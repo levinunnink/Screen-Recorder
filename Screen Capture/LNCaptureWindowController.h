@@ -11,11 +11,9 @@
 
 @protocol SCCaptureDelegate <NSObject>
 
-- (void)beginCaptureForScreen:(NSScreen*)screen inRect:(NSRect)rect;
+- (void)beginCaptureForScreen:(NSScreen*)screen;
 - (void)endScreenCapture;
 - (void)cancelScreenCapture;
-- (void)captureRectTooSmall;
-- (void)captureRectClickOutside;
 
 @end
 
@@ -23,8 +21,6 @@
 
 @property (nonatomic, assign) id<SCCaptureDelegate>captureDelegate;
 
-@property (nonatomic, assign) BOOL recording;
-@property (nonatomic, assign) BOOL hideStopButton;
 @property (nonatomic, readonly) LNCapturePanel *capturePanel;
 
 //+ (LNCaptureWindowController*)instance;
