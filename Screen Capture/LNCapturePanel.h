@@ -13,4 +13,6 @@
 
 @property (nonatomic, assign) NSRect cropRect;
 
+- (void)setIsRecording:(BOOL)isRecording;
+
 @end

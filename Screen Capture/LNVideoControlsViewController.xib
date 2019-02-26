@@ -9,17 +9,18 @@
         <customObject id="-2" userLabel="File's Owner" customClass="LNVideoControlsViewController">
             <connections>
                 <outlet property="captureOptionsMenu" destination="mDm-u0-ViH" id="1v4-vM-9XC"/>
+                <outlet property="recordButton" destination="ik1-La-htF" id="RAh-kH-0cj"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView id="Hz6-mo-xeY" customClass="LNControlsView">
-            <rect key="frame" x="0.0" y="0.0" width="358" height="45"/>
+            <rect key="frame" x="0.0" y="0.0" width="397" height="45"/>
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <stackView distribution="fillProportionally" orientation="horizontal" alignment="centerY" spacing="0.0" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Zw5-Rm-MZz">
-                    <rect key="frame" x="0.0" y="0.0" width="358" height="45"/>
+                    <rect key="frame" x="0.0" y="0.0" width="397" height="45"/>
                     <subviews>
                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="b1O-4h-mTq">
                             <rect key="frame" x="0.0" y="0.0" width="45" height="45"/>
@@ -64,7 +65,7 @@
                             </constraints>
                         </customView>
                         <popUpButton translatesAutoresizingMaskIntoConstraints="NO" id="O8f-So-MNs">
-                            <rect key="frame" x="55" y="0.0" width="67" height="45"/>
+                            <rect key="frame" x="55" y="0.0" width="88" height="45"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="45" id="nVM-gd-Ks8"/>
                             </constraints>
@@ -73,7 +74,7 @@
                                 <font key="font" metaFont="menu"/>
                                 <menu key="menu" autoenablesItems="NO" id="gL9-XU-ML2">
                                     <items>
-                                        <menuItem title="Preset" hidden="YES" enabled="NO" id="Yyl-qI-d9X"/>
+                                        <menuItem title="Preset" image="icn.Resize" hidden="YES" enabled="NO" id="Yyl-qI-d9X"/>
                                         <menuItem title="Apple iPhone" enabled="NO" id="7dJ-DV-fP7"/>
                                         <menuItem title="iPhone 8 - 375×667" image="icn.iPhone8" id="Azj-ti-w3E"/>
                                         <menuItem title="iPhone 8 Plus - 414×736" image="icn.iPhone8" id="Ddv-7y-W6U"/>
@@ -98,7 +99,7 @@
                             </connections>
                         </popUpButton>
                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="zdn-Js-4iz">
-                            <rect key="frame" x="122" y="0.0" width="20" height="45"/>
+                            <rect key="frame" x="143" y="0.0" width="20" height="45"/>
                             <subviews>
                                 <box horizontalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="pqm-0P-iKb">
                                     <rect key="frame" x="8" y="0.0" width="5" height="45"/>
@@ -115,13 +116,13 @@
                             </constraints>
                         </customView>
                         <popUpButton translatesAutoresizingMaskIntoConstraints="NO" id="AJ9-5W-sW8">
-                            <rect key="frame" x="142" y="0.0" width="76" height="45"/>
+                            <rect key="frame" x="163" y="0.0" width="94" height="45"/>
                             <popUpButtonCell key="cell" type="bevel" title="Options" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" imageScaling="proportionallyDown" inset="2" pullsDown="YES" autoenablesItems="NO" altersStateOfSelectedItem="NO" id="kVZ-l3-H5s">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="menu"/>
                                 <menu key="menu" autoenablesItems="NO" id="mDm-u0-ViH">
                                     <items>
-                                        <menuItem title="Options" hidden="YES" enabled="NO" id="CEF-9K-INQ"/>
+                                        <menuItem title="Options" image="NSSmartBadgeTemplate" hidden="YES" enabled="NO" id="CEF-9K-INQ"/>
                                         <menuItem title="Timer" enabled="NO" id="5OS-q1-xU4"/>
                                         <menuItem title="None" tag="1" id="rtC-Yn-vpe"/>
                                         <menuItem title="5 seconds" state="on" tag="2" id="naV-rT-Haf"/>
@@ -140,14 +141,14 @@
                             </popUpButtonCell>
                         </popUpButton>
                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="zwc-Xa-J1e">
-                            <rect key="frame" x="218" y="0.0" width="20" height="45"/>
+                            <rect key="frame" x="257" y="0.0" width="20" height="45"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="45" id="MIN-9Y-iY3"/>
                                 <constraint firstAttribute="width" constant="20" id="VJ1-Jp-XBG"/>
                             </constraints>
                         </customView>
                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="fMN-K2-ngt">
-                            <rect key="frame" x="238" y="0.0" width="120" height="45"/>
+                            <rect key="frame" x="277" y="0.0" width="120" height="45"/>
                             <subviews>
                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ik1-La-htF">
                                     <rect key="frame" x="0.0" y="0.0" width="120" height="45"/>
@@ -155,6 +156,9 @@
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="systemMedium" size="13"/>
                                     </buttonCell>
+                                    <connections>
+                                        <action selector="beginRecording:" target="-2" id="h15-8S-WSs"/>
+                                    </connections>
                                 </button>
                             </subviews>
                             <constraints>
@@ -199,12 +203,14 @@
                 <constraint firstItem="Zw5-Rm-MZz" firstAttribute="centerY" secondItem="Hz6-mo-xeY" secondAttribute="centerY" id="mCR-C2-9Ps"/>
                 <constraint firstItem="Zw5-Rm-MZz" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="tb4-jj-dEc"/>
             </constraints>
-            <point key="canvasLocation" x="-28" y="461.5"/>
+            <point key="canvasLocation" x="-17.5" y="461.5"/>
         </customView>
     </objects>
     <resources>
+        <image name="NSSmartBadgeTemplate" width="14" height="14"/>
         <image name="NSStopProgressFreestandingTemplate" width="14" height="14"/>
         <image name="icn.Desktop.small" width="13" height="11"/>
+        <image name="icn.Resize" width="17" height="18"/>
         <image name="icn.iPhone8" width="13" height="20"/>
         <image name="icn.iPhoneX" width="13" height="20"/>
     </resources>

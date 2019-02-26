@@ -13,8 +13,9 @@
 
 #define kCropRectKey @"LNCropRectKey"
 
-@interface SCCapturePanelBackgroundView : NSView <LNLayerHandleDelegate>
-
+@interface SCCapturePanelBackgroundView : NSView <LNLayerHandleDelegate> {
+    BOOL _isRecording;
+}
 @property (nonatomic, assign) NSRect cropRect;
 @property (nonatomic, strong) CAShapeLayer *cropLine;
 @property (strong) NSMutableArray *resizeHandles;
@@ -26,10 +27,13 @@
 @end
 
 
-@interface LNCapturePanel ()
+@interface LNCapturePanel () {
+    BOOL _isRecording;
+}
 
 @property (strong) SCCapturePanelBackgroundView* bgView;
 @property (strong) LNVideoControlsViewController* controls;
+
 @end
 
 @implementation SCCapturePanelBackgroundView
@@ -290,6 +294,15 @@
     }
 }
 
+- (void)setIsRecording:(BOOL)isRecording
+{
+    _isRecording = isRecording;
+    for(LNResizeHandle *handle in self.resizeHandles) {
+        handle.hidden = isRecording;
+    }
+    self.cropLine.hidden = isRecording;
+}
+
 @end
 
 @implementation LNCapturePanel
@@ -328,6 +341,14 @@
         (self.frame.size.width / 2) - self.controls.view.frame.size.width / 2, 15, self.controls.view.frame.size.width, self.controls.view.frame.size.height
     };
     return self;
+}
+
+- (void)setIsRecording:(BOOL)isRecording
+{
+    _isRecording = isRecording;
+    self.controls.view.hidden = isRecording;
+    [self.bgView setIsRecording:isRecording];
+    [self setIgnoresMouseEvents:!isRecording];
 }
 
 - (BOOL)acceptsFirstResponder

@@ -13,6 +13,9 @@
 @interface LNVideoControlsViewController ()
 
 @property (nullable, strong) NSString* selectedMicID;
+@property (assign) BOOL audioGranted;
+@property (assign) BOOL videoGranted;
+@property (assign) NSTimer *countdownTimer;
 
 @end
 
@@ -55,12 +58,22 @@
                     self.selectedMicID = mic.uniqueID;
                 }
             }
+            [self requestAudioPermission];
             break;
             }
         default:
             break;
     }
     [self setupMenu];
+}
+
+- (IBAction)beginRecording:(id)sender
+{
+    [self requestVideoPermissionComplete:^(){
+        [self countdown:[LNCaptureSessionOptions currentSession].startDelay complete:^(){
+            
+        }];
+    }];
 }
 
 - (void)setupMenu
@@ -92,6 +105,74 @@
     } else {
         [self.captureOptionsMenu itemWithTag:LNAudioNone].state = NSOffState;
     }
+}
+
+- (void)requestAudioPermission
+{
+    if (@available(macOS 10.14, *)) {
+        AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
+        self.audioGranted = status == AVAuthorizationStatusAuthorized;
+        if(status != AVAuthorizationStatusAuthorized) {
+            [AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio completionHandler:^(BOOL granted) {
+                self.audioGranted = granted;
+                if(!granted){
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        NSAlert *alert = [NSAlert new];
+                        alert.messageText = @"Error trying to record audio";
+                        alert.informativeText = @"Please allow access to record your mic under System Preferences > Security & Privacy > Privacy > Microphone.";
+                        [alert runModal];
+                    });
+                }
+                return;
+            }];
+        }
+    } else {
+        self.audioGranted = YES;
+    }
+}
+
+- (void)requestVideoPermissionComplete:(void (^)())complete;
+{
+    if (@available(macOS 10.14, *)) {
+        AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+        self.videoGranted = status == AVAuthorizationStatusAuthorized;
+        if(self.videoGranted) return complete();
+        if(status != AVAuthorizationStatusAuthorized) {
+            [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
+                self.videoGranted = granted;
+                if(!granted){
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        NSAlert *alert = [NSAlert new];
+                        alert.messageText = @"Error trying to record your screen";
+                        alert.informativeText = @"Please allow access to record your screen under System Preferences > Security & Privacy > Privacy > Camera.";
+                        [alert runModal];
+                    });
+                } else {
+                    complete();
+                }
+            }];
+        }
+    } else {
+        self.videoGranted = YES;
+        complete();
+    }
+}
+
+- (void)countdown:(int)seconds complete:(void (^)())complete
+{
+    if(seconds == 0) return complete();
+    __block int currentSeconds = seconds;
+    self.countdownTimer = [NSTimer scheduledTimerWithTimeInterval:1 repeats:YES block:^(NSTimer *timer) {
+        if(currentSeconds == 0) {
+            [timer invalidate];
+            self.recordButton.enabled = YES;
+            [self.recordButton setTitle:@"Record"];
+            return complete();
+        }
+        self.recordButton.enabled = NO;
+        [self.recordButton setTitle:[NSString stringWithFormat:@"%d s...", currentSeconds]];
+        currentSeconds = currentSeconds - 1;
+    }];
 }
 
 @end

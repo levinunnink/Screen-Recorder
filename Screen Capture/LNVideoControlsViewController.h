@@ -22,8 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface LNVideoControlsViewController : NSViewController
 
 @property (weak) IBOutlet NSMenu *captureOptionsMenu;
+@property (weak) IBOutlet NSButton *recordButton;
 
 - (IBAction)setSessionOptions:(id)sender;
+- (IBAction)beginRecording:(id)sender;
 
 @end
 

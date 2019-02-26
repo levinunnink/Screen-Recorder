@@ -35,6 +35,5 @@
 - (void)stopRecording:(id)sender;
 
 - (IBAction)setPreset:(id)sender;
-- (IBAction)setSessionOptions:(id)sender;
 
 @end

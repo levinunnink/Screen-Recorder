@@ -24,41 +24,6 @@
 
 @implementation LNCaptureWindowController
 
-//+ (LNCaptureWindowController*)instance
-//{
-//
-//    static LNCaptureWindowController* instance = nil;
-//    static dispatch_once_t onceToken;
-//    dispatch_once(&onceToken, ^{
-//        LNCapturePanel* panel = [[LNCapturePanel alloc]
-//                                        initWithContentRect:NSZeroRect styleMask: NSWindowStyleMaskNonactivatingPanel|NSWindowStyleMaskBorderless
-//                                        backing:NSBackingStoreBuffered defer:NO];
-//        instance = [[LNCaptureWindowController alloc] initWithWindow:panel];
-//        panel.delegate = instance;
-//
-//        NSButton *confirm = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 160, 25)];
-//        [confirm setCell:[[LNCaptureButtonCell alloc] init]];
-//        [confirm setTitle: @"Start Recording"];
-//        [confirm setButtonType:NSMomentaryLightButton]; //Set what type button You want
-//        [confirm setBezelStyle:NSRoundedBezelStyle]; //Set what style You want
-//        confirm.target = instance;
-//        confirm.action = @selector(startRecording:);
-//        instance.confirmationButton = confirm;
-//
-//        NSButton *stop = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 160, 25)];
-//        //[stop setCell:[[LNCaptureButtonCell alloc] init]];
-//        [stop setTitle: @"Stop Recording"];
-//        [stop setKeyEquivalent:@"\E"];
-//        [stop setButtonType:NSMomentaryLightButton]; //Set what type button You want
-//        [stop setBezelStyle:NSRoundedBezelStyle]; //Set what style You want
-//        stop.target = instance;
-//        stop.action = @selector(stopRecording:);
-//        instance.stopRecordingButton = stop;
-//    });
-//
-//    return instance;
-//}
-
 - (id)init
 {
     LNCapturePanel* panel = [[LNCapturePanel alloc]
@@ -96,9 +61,10 @@
 
 #pragma mark Actions
 
-- (void)startRecording:(id)sender
+- (IBAction)startRecording:(id)sender
 {
     self.recording = YES;
+    [self.capturePanel setIsRecording:YES];
     self.window.ignoresMouseEvents = YES;
     [self.confirmationButton setHidden:YES];
     // We do this to prevent the button showing
@@ -108,7 +74,7 @@
     });
 }
 
-- (void)stopRecording:(id)sender
+- (IBAction)stopRecording:(id)sender
 {
     self.window.ignoresMouseEvents = NO;
     [self endScreenCapture];
