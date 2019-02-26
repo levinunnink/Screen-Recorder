@@ -7,13 +7,24 @@
 //
 
 #import "LNCapturePanel.h"
-
 #import <QuartzCore/QuartzCore.h>
+#import "LNResizeHandle.h"
 
-@interface SCCapturePanelBackgroundView : NSView
+#define kCropRectKey @"LNCropRectKey"
+
+@interface SCCapturePanelBackgroundView : NSView <LNLayerHandleDelegate>
 
 @property (nonatomic, assign) NSRect cropRect;
 @property (nonatomic, strong) CAShapeLayer *cropLine;
+@property (strong) LNResizeHandle *topLeftHandle;
+@property (strong) LNResizeHandle *topRightHandle;
+@property (strong) LNResizeHandle *bottomLeftHandle;
+@property (strong) LNResizeHandle *bottomRightHandle;
+@property (strong) CALayer *backgroundColorLayer;
+@property (assign) CGPoint startPoint;
+@property (assign) CGRect startRect;
+@property (assign) LNResizeHandle *activeHandle;
+
 @end
 
 
@@ -31,9 +42,20 @@
     [self setWantsLayer:YES];
     
     if (self) {
-        self.layer.backgroundColor = [NSColor colorWithWhite:0.0 alpha:0.5].CGColor;
         [self setAutoresizingMask:NSViewHeightSizable | NSViewWidthSizable];
         [self setAutoresizesSubviews:YES];
+        self.backgroundColorLayer = [CALayer layer];
+        self.backgroundColorLayer.bounds = self.bounds;
+        self.backgroundColorLayer.backgroundColor = [NSColor colorWithWhite:0.0 alpha:0.5].CGColor;
+        [[self layer] addSublayer:self.backgroundColorLayer];
+        self.topLeftHandle = [LNResizeHandle handleWithPosition:LNResizePositionTopLeft];
+        self.topRightHandle = [LNResizeHandle handleWithPosition:LNResizePositionTopRight];
+        self.bottomLeftHandle = [LNResizeHandle handleWithPosition:LNResizePositionBottomLeft];
+        self.bottomRightHandle = [LNResizeHandle handleWithPosition:LNResizePositionBottomRight];
+        self.topLeftHandle.delegate = self;
+        self.topRightHandle.delegate = self;
+        self.bottomLeftHandle.delegate = self;
+        self.bottomRightHandle.delegate = self;
     }
     
     return self;
@@ -50,6 +72,11 @@
     [CATransaction begin];
     [CATransaction setDisableActions: YES];
     
+    self.topLeftHandle.position = CGPointMake(cropRect.origin.x, cropRect.origin.y + cropRect.size.height);
+    self.topRightHandle.position = CGPointMake(cropRect.origin.x + cropRect.size.width, cropRect.origin.y + cropRect.size.height);
+    self.bottomLeftHandle.position = CGPointMake(cropRect.origin.x, cropRect.origin.y);
+    self.bottomRightHandle.position = CGPointMake(cropRect.origin.x + cropRect.size.width, cropRect.origin.y);
+    
     CAShapeLayer *maskLayer;
     if(self.layer.mask) {
         maskLayer = self.layer.mask;
@@ -64,13 +91,23 @@
     [maskLayer setPath:maskPath];
     maskLayer.fillRule = kCAFillRuleEvenOdd;         // this line is new
     CGPathRelease(maskPath);
-    self.layer.mask = maskLayer;
+    self.backgroundColorLayer.mask = maskLayer;
     
     if(!self.cropLine) {
         self.cropLine = [CAShapeLayer layer];
-        self.cropLine.fillColor = [NSColor whiteColor].CGColor;
+        self.cropLine.backgroundColor = [NSColor clearColor].CGColor;
+        self.cropLine.fillColor = [NSColor clearColor].CGColor;
+        self.cropLine.strokeColor = [NSColor whiteColor].CGColor;
+        self.cropLine.lineWidth = 1;
+        self.cropLine.lineJoin = kCALineJoinRound;
+        self.cropLine.lineDashPattern = @[@(4), @(4)];
         [self.layer addSublayer:self.cropLine];
     }
+    
+    [self.layer addSublayer:self.topLeftHandle];
+    [self.layer addSublayer:self.topRightHandle];
+    [self.layer addSublayer:self.bottomLeftHandle];
+    [self.layer addSublayer:self.bottomRightHandle];
 
     CGPathRef linePath = CGPathCreateWithRect((CGRect){
         cropRect.origin.x - 1,
@@ -84,23 +121,130 @@
     CGPathRelease(linePath);
     
     [CATransaction commit];
-
+    
+    [[NSUserDefaults standardUserDefaults] setObject:NSStringFromRect(cropRect) forKey:kCropRectKey];
 }
 
-- (void)mouseEntered:(NSEvent *)theEvent
+- (void)mouseEntered:(NSEvent *)event
 {
     [[NSCursor crosshairCursor] push];
 }
 
-- (void)mouseExited:(NSEvent *)theEvent
+- (void)mouseExited:(NSEvent *)event
 {
     [[NSCursor crosshairCursor] pop];
+}
+
+- (void)mouseMoved:(NSEvent *)event
+{
+    DMARK;
+    CGPoint point = [self convertPoint:event.locationInWindow fromView:nil];
+    CALayer* layer = [self.layer hitTest:point];
+    DLOG(@"Layer %@", layer);
+    if ([layer isKindOfClass:[LNResizeHandle class]]) {
+        [[(LNResizeHandle*)layer cursor] push];
+//        [self handle:(LNResizeHandle*)layer pointDidChangeTo:point];
+        return;
+    } else if (CGRectContainsPoint(self.cropRect, point)) {
+        [[NSCursor openHandCursor] push];
+//        [self moveCropRectFromPoint:self.startPoint ToPoint:point];
+        return;
+    } else {
+        [[NSCursor arrowCursor] set];
+    }
+}
+
+- (void)mouseDragged:(NSEvent *)event
+{
+    CGPoint point = [self convertPoint:event.locationInWindow fromView:nil];
+    if (self.activeHandle) {
+        [self.activeHandle setRepresentedPoint:point];
+        return;
+    } else if (CGRectContainsPoint(self.cropRect, point)) {
+        [self moveCropRectFromPoint:self.startPoint ToPoint:point];
+        return;
+    } else {
+        [[NSCursor arrowCursor] set];
+    }
+
+}
+
+- (void)mouseDown:(NSEvent *)theEvent
+{
+    DMARK;
+    CGPoint point = [self convertPoint:theEvent.locationInWindow fromView:nil];
+    CALayer* layer = [self.layer hitTest:point];
+    
+    if ([layer isKindOfClass:[LNResizeHandle class]]) {
+        DLOG(@"LNResizeHandle click");
+        self.activeHandle = (LNResizeHandle*)layer;
+        return;
+    }
+    if(CGRectContainsPoint(self.cropRect, point))  {
+        DLOG(@"cropLayerClick");
+        self.startPoint = point;
+        self.startRect = self.cropRect;
+        return;
+    }
+}
+
+- (void)mouseUp:(NSEvent *)event
+{
+    self.activeHandle = nil;
+}
+
+- (void)updateTrackingAreas
+{
+    [super updateTrackingAreas];
+    [self addTrackingArea:[[NSTrackingArea alloc] initWithRect:self.frame options:NSTrackingMouseMoved+NSTrackingActiveAlways owner:self userInfo:nil]];
 }
 
 - (void)setFrame:(NSRect)frameRect
 {
     [super setFrame:frameRect];
+    [CATransaction begin];
+    [CATransaction setDisableActions: YES];
+    self.backgroundColorLayer.frame = CGRectMake(0, 0, frameRect.size.width, frameRect.size.height);
+    [CATransaction commit];
     [self updateTrackingAreas];
+}
+
+#pragma mark - LNLayerHandleDelegate
+
+- (void)moveCropRectFromPoint:(CGPoint)point ToPoint:(CGPoint)newPoint
+{
+    CGPoint difference = (CGPoint) {
+        newPoint.x - point.x,
+        newPoint.y - point.y,
+    };
+    CGRect newRect = self.startRect;
+    newRect = CGRectApplyAffineTransform(newRect, CGAffineTransformMakeTranslation(difference.x, difference.y));
+    [self setCropRect:newRect];
+}
+
+- (void)handle:(LNResizeHandle*)sender pointDidChangeTo:(CGPoint)point;
+{
+    CGRect bounding = self.cropRect;
+    
+    if (sender.resizeLocation == LNResizePositionTopLeft || sender.resizeLocation == LNResizePositionBottomLeft) {
+        bounding.size.width = CGRectGetWidth(bounding) + (CGRectGetMinX(bounding) - point.x);
+        bounding.origin.x   = point.x;
+        //Right Handle X
+    }else{
+        bounding.size.width -= CGRectGetMaxX(bounding) - point.x;
+    }
+    
+    //Top Handle Y
+    if (sender.resizeLocation == LNResizePositionTopLeft || sender.resizeLocation == LNResizePositionTopRight) {
+        bounding.size.height = CGRectGetHeight(bounding) - (CGRectGetMaxY(bounding) - point.y);
+        bounding.origin.y    = point.y - CGRectGetHeight(bounding);
+        //Bottom Handle Y
+    }else{
+        bounding.size.height = CGRectGetHeight(bounding) + (CGRectGetMinY(bounding) - point.y);
+        bounding.origin.y    = point.y;
+    }
+    
+    [self setCropRect:bounding];
 }
 
 @end
@@ -124,11 +268,23 @@
     [self setLevel:NSStatusWindowLevel];
     [self setRestorable:NO];
     [self disableSnapshotRestoration];
+    [self setIgnoresMouseEvents:NO];
     
     self.bgView = [[SCCapturePanelBackgroundView alloc] initWithFrame:contentRect];
     self.bgView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
     [self.contentView addSubview:self.bgView];
     
+    NSString *rectString = [[NSUserDefaults standardUserDefaults] stringForKey:kCropRectKey];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        if(rectString) [self setCropRect:NSRectFromString(rectString)];
+        [self setCropRect:(NSRect){
+           250,
+           250,
+           800,
+           600
+        }];
+    });
+//
 //    [self setContentView:[[SCCapturePanelBackgroundView alloc] initWithFrame:NSZeroRect]];
     
     return self;

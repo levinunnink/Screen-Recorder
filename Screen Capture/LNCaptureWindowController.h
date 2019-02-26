@@ -25,7 +25,6 @@
 
 @property (nonatomic, assign) BOOL recording;
 @property (nonatomic, assign) BOOL hideStopButton;
-@property (nonatomic, strong) NSString* overlayMessage;
 @property (nonatomic, readonly) LNCapturePanel *capturePanel;
 
 //+ (LNCaptureWindowController*)instance;

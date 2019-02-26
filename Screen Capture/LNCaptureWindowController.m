@@ -18,7 +18,6 @@
 @property (nonatomic, assign) NSPoint startPoint;
 @property (nonatomic, strong) NSButton *confirmationButton;
 @property (nonatomic, strong) NSButton *stopRecordingButton;
-@property (nonatomic, strong) LNOverlayView *overlay;
 @property (nonatomic, assign) BOOL mouseDidDrag;
 
 @end
@@ -151,9 +150,6 @@
     [self.stopRecordingButton setHidden:YES];
     self.capturePanel.cropRect = NSZeroRect;
     [self.window setFrame:screen.frame display:YES];
-    if (!self.overlay.isHidden)
-        [self hideOverlay];
-    [self showOverlay];
     [self showWindow:self];
     [self.capturePanel becomeKeyWindow];
 }
@@ -172,10 +168,6 @@
     
     if (_recording) return;
     
-    if (!self.overlay.isHidden)
-        [self hideOverlay];
-    
-    
     self.mouseDidDrag = NO;
     
     [self.confirmationButton setHidden:YES];
@@ -187,9 +179,6 @@
 {
     
     if (_recording) return;
-    
-    if (!self.overlay.isHidden)
-        [self hideOverlay];
     
     self.mouseDidDrag = YES;
     
@@ -284,25 +273,6 @@
 - (LNCapturePanel*)capturePanel
 {
     return (LNCapturePanel*)self.window;
-}
-
-- (void)showOverlay
-{
-    
-    if (!self.overlay) {
-        self.overlay = [[LNOverlayView alloc] initWithFrame:NSMakeRect(0, 0, 600, 200)];
-        self.overlay.label = self.overlayMessage ? self.overlayMessage : @"Drag on screen to record video.";
-        [self.window.contentView addSubview:self.overlay];
-    }
-    [self.overlay centerInSuperview];
-    [self.overlay setHidden:NO];
-    [self.overlay setNeedsDisplay:YES];
-}
-
-- (void)hideOverlay
-{
-    
-    [self.overlay setHidden:YES];
 }
 
 @end

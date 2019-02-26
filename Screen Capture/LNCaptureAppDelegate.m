@@ -82,11 +82,11 @@
             NSLog(@"Error deleting existing movie %@",[err localizedDescription]);
         }
     }
-    NSLog(@"Recording to: %@",[self captureTemporaryFilePath]);
     // Start recording to the destination movie file
     // The destination path is assumed to end with ".mov", for example, @"/users/master/desktop/capture.mov"
     // Set the recording delegate to self
     NSURL *fileURL = [[NSURL fileURLWithPath:NSTemporaryDirectory()] URLByAppendingPathComponent:[self captureTemporaryFilePath]];
+    NSLog(@"Recording to: %@",fileURL.absoluteString);
     [self.mMovieFileOutput startRecordingToOutputFileURL:fileURL recordingDelegate:self];
 
 }

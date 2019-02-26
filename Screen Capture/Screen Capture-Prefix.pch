@@ -4,6 +4,10 @@
 //  The contents of this file are implicitly included at the beginning of every source file.
 //
 
+#define DLOG(...)       NSLog(__VA_ARGS__)
+#define DOBJ(o)         NSLog(@"%s = %@", #o, o)
+#define DMARK           NSLog(@"%s", __PRETTY_FUNCTION__)
+
 #ifdef __OBJC__
     #import <Cocoa/Cocoa.h>
 #endif

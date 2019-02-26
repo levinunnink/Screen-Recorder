@@ -7,6 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "LNResizeHandle.h"
 
 @interface LNCapturePanel : NSPanel
 

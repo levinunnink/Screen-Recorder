@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		07F02A121C4F93FB00D5C5BE /* DMBackgroundColorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F02A111C4F93FB00D5C5BE /* DMBackgroundColorView.m */; };
 		89D6B45C18C91F0C006465EC /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89D6B45B18C91F0C006465EC /* Cocoa.framework */; };
 		89D6B46618C91F0C006465EC /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 89D6B46418C91F0C006465EC /* InfoPlist.strings */; };
 		89D6B46818C91F0C006465EC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 89D6B46718C91F0C006465EC /* main.m */; };
@@ -22,6 +21,11 @@
 		89D6B49318C9224F006465EC /* LNCaptureWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89D6B49118C9224F006465EC /* LNCaptureWindowController.m */; };
 		89D6B49418C9224F006465EC /* LNCaptureWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89D6B49218C9224F006465EC /* LNCaptureWindowController.xib */; };
 		89D6B49718C923F2006465EC /* LNCapturePanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 89D6B49618C923F2006465EC /* LNCapturePanel.m */; };
+		89DC06512224AA0C0025550B /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89DC06502224AA0B0025550B /* QuartzCore.framework */; };
+		89DC06562224AAE70025550B /* LNVideoControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89DC06542224AAE70025550B /* LNVideoControlsViewController.m */; };
+		89DC06572224AAE70025550B /* LNVideoControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89DC06552224AAE70025550B /* LNVideoControlsViewController.xib */; };
+		89DC065A2224AC3C0025550B /* LNResizeHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 89DC06592224AC3C0025550B /* LNResizeHandle.m */; };
+		89DC065E2224AD120025550B /* NSBezierPath+LNExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 89DC065D2224AD120025550B /* NSBezierPath+LNExtensions.m */; };
 		89FA814618C939EC00AE95B3 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89FA814518C939EC00AE95B3 /* AVFoundation.framework */; };
 		89FA814918C9467700AE95B3 /* LNGIFConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 89FA814818C9467700AE95B3 /* LNGIFConverter.m */; };
 		89FA814B18C94B0D00AE95B3 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89FA814A18C94B0D00AE95B3 /* CoreMedia.framework */; };
@@ -40,8 +44,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		07F02A101C4F93F400D5C5BE /* DMBackgroundColorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMBackgroundColorView.h; sourceTree = "<group>"; };
-		07F02A111C4F93FB00D5C5BE /* DMBackgroundColorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMBackgroundColorView.m; sourceTree = "<group>"; };
 		89D6B45818C91F0C006465EC /* Screen Capture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Screen Capture.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		89D6B45B18C91F0C006465EC /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		89D6B45E18C91F0C006465EC /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -66,6 +68,14 @@
 		89D6B49218C9224F006465EC /* LNCaptureWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LNCaptureWindowController.xib; sourceTree = "<group>"; };
 		89D6B49518C923F2006465EC /* LNCapturePanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LNCapturePanel.h; sourceTree = "<group>"; };
 		89D6B49618C923F2006465EC /* LNCapturePanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LNCapturePanel.m; sourceTree = "<group>"; };
+		89DC06502224AA0B0025550B /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		89DC06532224AAE70025550B /* LNVideoControlsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LNVideoControlsViewController.h; sourceTree = "<group>"; };
+		89DC06542224AAE70025550B /* LNVideoControlsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LNVideoControlsViewController.m; sourceTree = "<group>"; };
+		89DC06552224AAE70025550B /* LNVideoControlsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LNVideoControlsViewController.xib; sourceTree = "<group>"; };
+		89DC06582224AC3C0025550B /* LNResizeHandle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LNResizeHandle.h; sourceTree = "<group>"; };
+		89DC06592224AC3C0025550B /* LNResizeHandle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LNResizeHandle.m; sourceTree = "<group>"; };
+		89DC065C2224AD120025550B /* NSBezierPath+LNExtensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSBezierPath+LNExtensions.h"; sourceTree = "<group>"; };
+		89DC065D2224AD120025550B /* NSBezierPath+LNExtensions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSBezierPath+LNExtensions.m"; sourceTree = "<group>"; };
 		89FA814518C939EC00AE95B3 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		89FA814718C9467700AE95B3 /* LNGIFConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LNGIFConverter.h; sourceTree = "<group>"; };
 		89FA814818C9467700AE95B3 /* LNGIFConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LNGIFConverter.m; sourceTree = "<group>"; };
@@ -81,6 +91,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				89DC06512224AA0C0025550B /* QuartzCore.framework in Frameworks */,
 				89FA814B18C94B0D00AE95B3 /* CoreMedia.framework in Frameworks */,
 				89FA814618C939EC00AE95B3 /* AVFoundation.framework in Frameworks */,
 				89D6B45C18C91F0C006465EC /* Cocoa.framework in Frameworks */,
@@ -121,6 +132,7 @@
 		89D6B45A18C91F0C006465EC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				89DC06502224AA0B0025550B /* QuartzCore.framework */,
 				89FA814A18C94B0D00AE95B3 /* CoreMedia.framework */,
 				89FA814518C939EC00AE95B3 /* AVFoundation.framework */,
 				89D6B45B18C91F0C006465EC /* Cocoa.framework */,
@@ -143,6 +155,7 @@
 		89D6B46118C91F0C006465EC /* Screen Capture */ = {
 			isa = PBXGroup;
 			children = (
+				89DC065F2224B8B80025550B /* Resources */,
 				89D6B48F18C91F15006465EC /* Classes */,
 				89D6B46D18C91F0C006465EC /* LNCaptureAppDelegate.h */,
 				89D6B46E18C91F0C006465EC /* LNCaptureAppDelegate.m */,
@@ -186,11 +199,39 @@
 		89D6B48F18C91F15006465EC /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				89DC065B2224ACFC0025550B /* Extensions */,
+				89DC06522224AAB10025550B /* Controls */,
 				89FA815B18CA6A8200AE95B3 /* Overlay */,
 				89FA814D18CA562900AE95B3 /* Converting */,
 				89FA814C18CA561800AE95B3 /* Capture */,
 			);
 			name = Classes;
+			sourceTree = "<group>";
+		};
+		89DC06522224AAB10025550B /* Controls */ = {
+			isa = PBXGroup;
+			children = (
+				89DC06532224AAE70025550B /* LNVideoControlsViewController.h */,
+				89DC06542224AAE70025550B /* LNVideoControlsViewController.m */,
+				89DC06552224AAE70025550B /* LNVideoControlsViewController.xib */,
+			);
+			name = Controls;
+			sourceTree = "<group>";
+		};
+		89DC065B2224ACFC0025550B /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				89DC065C2224AD120025550B /* NSBezierPath+LNExtensions.h */,
+				89DC065D2224AD120025550B /* NSBezierPath+LNExtensions.m */,
+			);
+			name = Extensions;
+			sourceTree = "<group>";
+		};
+		89DC065F2224B8B80025550B /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 		89FA814C18CA561800AE95B3 /* Capture */ = {
@@ -203,6 +244,8 @@
 				89D6B49618C923F2006465EC /* LNCapturePanel.m */,
 				89FA815818CA5B0000AE95B3 /* LNCaptureButtonCell.h */,
 				89FA815918CA5B0000AE95B3 /* LNCaptureButtonCell.m */,
+				89DC06582224AC3C0025550B /* LNResizeHandle.h */,
+				89DC06592224AC3C0025550B /* LNResizeHandle.m */,
 			);
 			name = Capture;
 			sourceTree = "<group>";
@@ -219,8 +262,6 @@
 		89FA815B18CA6A8200AE95B3 /* Overlay */ = {
 			isa = PBXGroup;
 			children = (
-				07F02A101C4F93F400D5C5BE /* DMBackgroundColorView.h */,
-				07F02A111C4F93FB00D5C5BE /* DMBackgroundColorView.m */,
 				89FA815C18CA949900AE95B3 /* LNOverlayView.h */,
 				89FA815D18CA949900AE95B3 /* LNOverlayView.m */,
 			);
@@ -304,6 +345,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				89DC06572224AAE70025550B /* LNVideoControlsViewController.xib in Resources */,
 				89D6B46618C91F0C006465EC /* InfoPlist.strings in Resources */,
 				89D6B47418C91F0C006465EC /* Images.xcassets in Resources */,
 				89D6B46C18C91F0C006465EC /* Credits.rtf in Resources */,
@@ -327,13 +369,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				89DC065A2224AC3C0025550B /* LNResizeHandle.m in Sources */,
 				89FA815A18CA5B0000AE95B3 /* LNCaptureButtonCell.m in Sources */,
 				89FA815E18CA949900AE95B3 /* LNOverlayView.m in Sources */,
 				89D6B46F18C91F0C006465EC /* LNCaptureAppDelegate.m in Sources */,
 				89D6B49718C923F2006465EC /* LNCapturePanel.m in Sources */,
 				89D6B46818C91F0C006465EC /* main.m in Sources */,
-				07F02A121C4F93FB00D5C5BE /* DMBackgroundColorView.m in Sources */,
 				89D6B49318C9224F006465EC /* LNCaptureWindowController.m in Sources */,
+				89DC06562224AAE70025550B /* LNVideoControlsViewController.m in Sources */,
+				89DC065E2224AD120025550B /* NSBezierPath+LNExtensions.m in Sources */,
 				89FA814918C9467700AE95B3 /* LNGIFConverter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
