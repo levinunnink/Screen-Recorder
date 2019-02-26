@@ -33,10 +33,10 @@
         self.shadowColor   = [UIColor blackColor].CGColor;
 #else
         self.fillColor     = [NSColor grayColor].CGColor;
-        self.strokeColor   = [NSColor whiteColor].CGColor;
+        self.strokeColor = [NSColor whiteColor].CGColor;
         self.shadowColor   = [NSColor blackColor].CGColor;
 #endif
-        self.lineWidth     = 2.5; //Not sure why this needs to be 2.5 but 2.0 creates a weird artifact in mavericks
+        self.lineWidth     = 1.5; //Not sure why this needs to be 2.5 but 2.0 creates a weird artifact in mavericks
         self.shadowOpacity = 0.5;
         self.shadowRadius  = 3.0;
         self.shadowOffset  = CGSizeMake(0, 0);
@@ -54,6 +54,11 @@
     return CGPathContainsPoint(thickPath, NULL, p, false);
 }
 
+- (CGPoint)getRepresentedPoint
+{
+    return _representedPoint;
+}
+
 - (void)setRepresentedPoint:(CGPoint)representedPoint
 {
     _representedPoint = representedPoint;
@@ -66,7 +71,7 @@
     [CATransaction commit];
     
 //    if(self.active){
-        [self.delegate handle:self pointDidChangeTo:representedPoint];
+        [self.handleDelegate handle:self pointDidChangeTo:representedPoint];
 //    }
 }
 

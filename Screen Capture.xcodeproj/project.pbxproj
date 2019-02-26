@@ -26,6 +26,7 @@
 		89DC06572224AAE70025550B /* LNVideoControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89DC06552224AAE70025550B /* LNVideoControlsViewController.xib */; };
 		89DC065A2224AC3C0025550B /* LNResizeHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 89DC06592224AC3C0025550B /* LNResizeHandle.m */; };
 		89DC065E2224AD120025550B /* NSBezierPath+LNExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 89DC065D2224AD120025550B /* NSBezierPath+LNExtensions.m */; };
+		89DC06622225C4B10025550B /* LNControlsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 89DC06612225C4B10025550B /* LNControlsView.m */; };
 		89FA814618C939EC00AE95B3 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89FA814518C939EC00AE95B3 /* AVFoundation.framework */; };
 		89FA814918C9467700AE95B3 /* LNGIFConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 89FA814818C9467700AE95B3 /* LNGIFConverter.m */; };
 		89FA814B18C94B0D00AE95B3 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89FA814A18C94B0D00AE95B3 /* CoreMedia.framework */; };
@@ -76,6 +77,8 @@
 		89DC06592224AC3C0025550B /* LNResizeHandle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LNResizeHandle.m; sourceTree = "<group>"; };
 		89DC065C2224AD120025550B /* NSBezierPath+LNExtensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSBezierPath+LNExtensions.h"; sourceTree = "<group>"; };
 		89DC065D2224AD120025550B /* NSBezierPath+LNExtensions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSBezierPath+LNExtensions.m"; sourceTree = "<group>"; };
+		89DC06602225C4B10025550B /* LNControlsView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LNControlsView.h; sourceTree = "<group>"; };
+		89DC06612225C4B10025550B /* LNControlsView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LNControlsView.m; sourceTree = "<group>"; };
 		89FA814518C939EC00AE95B3 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		89FA814718C9467700AE95B3 /* LNGIFConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LNGIFConverter.h; sourceTree = "<group>"; };
 		89FA814818C9467700AE95B3 /* LNGIFConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LNGIFConverter.m; sourceTree = "<group>"; };
@@ -214,6 +217,8 @@
 				89DC06532224AAE70025550B /* LNVideoControlsViewController.h */,
 				89DC06542224AAE70025550B /* LNVideoControlsViewController.m */,
 				89DC06552224AAE70025550B /* LNVideoControlsViewController.xib */,
+				89DC06602225C4B10025550B /* LNControlsView.h */,
+				89DC06612225C4B10025550B /* LNControlsView.m */,
 			);
 			name = Controls;
 			sourceTree = "<group>";
@@ -372,6 +377,7 @@
 				89DC065A2224AC3C0025550B /* LNResizeHandle.m in Sources */,
 				89FA815A18CA5B0000AE95B3 /* LNCaptureButtonCell.m in Sources */,
 				89FA815E18CA949900AE95B3 /* LNOverlayView.m in Sources */,
+				89DC06622225C4B10025550B /* LNControlsView.m in Sources */,
 				89D6B46F18C91F0C006465EC /* LNCaptureAppDelegate.m in Sources */,
 				89D6B49718C923F2006465EC /* LNCapturePanel.m in Sources */,
 				89D6B46818C91F0C006465EC /* main.m in Sources */,
@@ -512,6 +518,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Screen Capture/Screen Capture-Prefix.pch";
 				INFOPLIST_FILE = "Screen Capture/Screen Capture-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -525,6 +532,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Screen Capture/Screen Capture-Prefix.pch";
 				INFOPLIST_FILE = "Screen Capture/Screen Capture-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

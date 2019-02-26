@@ -8,12 +8,12 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#define DEFAULT_HANDLE_WIDTH 12
+#define DEFAULT_HANDLE_WIDTH 8
 
 NS_ASSUME_NONNULL_BEGIN
 
 typedef enum LNResizePosition {
-    LNResizePositionTop,
+    LNResizePositionTop = 0,
     LNResizePositionTopLeft,
     LNResizePositionTopRight,
     LNResizePositionRight,
@@ -21,6 +21,7 @@ typedef enum LNResizePosition {
     LNResizePositionBottom,
     LNResizePositionBottomLeft,
     LNResizePositionLeft,
+    LNResizePositionCount,
 } LNResizePosition;
 
 
@@ -34,10 +35,10 @@ typedef enum LNResizePosition {
 
 +(id)handleWithPosition:(LNResizePosition)position;
 
-@property (weak)   id<LNLayerHandleDelegate> delegate;
-@property (assign) CGPoint representedPoint;
-@property (assign) BOOL    active;
-@property (assign) BOOL    selected;
+@property (weak)   id<LNLayerHandleDelegate> handleDelegate;
+@property (assign, nonatomic) CGPoint representedPoint;
+@property (assign) BOOL active;
+@property (assign) BOOL selected;
 @property (readonly) LNResizePosition resizeLocation;
 @property (readonly) NSCursor *cursor;
 @end
