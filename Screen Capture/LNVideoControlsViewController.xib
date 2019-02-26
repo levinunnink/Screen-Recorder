@@ -8,6 +8,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="LNVideoControlsViewController">
             <connections>
+                <outlet property="captureOptionsMenu" destination="mDm-u0-ViH" id="1v4-vM-9XC"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
@@ -122,22 +123,21 @@
                                     <items>
                                         <menuItem title="Options" hidden="YES" enabled="NO" id="CEF-9K-INQ"/>
                                         <menuItem title="Timer" enabled="NO" id="5OS-q1-xU4"/>
-                                        <menuItem title="None" id="rtC-Yn-vpe"/>
-                                        <menuItem title="5 seconds" state="on" id="naV-rT-Haf"/>
-                                        <menuItem title="10 seconds" id="npf-5z-2xc"/>
+                                        <menuItem title="None" tag="1" id="rtC-Yn-vpe"/>
+                                        <menuItem title="5 seconds" state="on" tag="2" id="naV-rT-Haf"/>
+                                        <menuItem title="10 seconds" tag="3" id="npf-5z-2xc"/>
                                         <menuItem isSeparatorItem="YES" id="yDA-9g-ase"/>
                                         <menuItem title="Microphone" enabled="NO" id="Vj0-4v-CLy"/>
-                                        <menuItem title="None" state="on" id="LfD-w1-hFT"/>
-                                        <menuItem title="Default Built In" id="OHx-SW-Vs6"/>
+                                        <menuItem title="None" state="on" tag="4" id="LfD-w1-hFT"/>
                                         <menuItem isSeparatorItem="YES" id="aAQ-Hq-whd"/>
                                         <menuItem title="Options" enabled="NO" id="0Y7-Vo-6Qh"/>
-                                        <menuItem title="Show mouse clicks" state="on" id="nUY-Cq-Nlh"/>
+                                        <menuItem title="Show mouse clicks" state="on" tag="5" id="nUY-Cq-Nlh"/>
                                     </items>
                                 </menu>
+                                <connections>
+                                    <action selector="setSessionOptions:" target="-2" id="oEb-Rh-1aR"/>
+                                </connections>
                             </popUpButtonCell>
-                            <connections>
-                                <action selector="setSessionOptions:" target="-1" id="KhQ-jE-XSX"/>
-                            </connections>
                         </popUpButton>
                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="zwc-Xa-J1e">
                             <rect key="frame" x="218" y="0.0" width="20" height="45"/>

@@ -121,17 +121,13 @@
 
 - (void)mouseMoved:(NSEvent *)event
 {
-    DMARK;
     CGPoint point = [self convertPoint:event.locationInWindow fromView:nil];
     CALayer* layer = [self.layer hitTest:point];
-    DLOG(@"Layer %@", layer);
     if ([layer isKindOfClass:[LNResizeHandle class]]) {
         [[(LNResizeHandle*)layer cursor] push];
-//        [self handle:(LNResizeHandle*)layer pointDidChangeTo:point];
         return;
     } else if (CGRectContainsPoint(self.cropRect, point)) {
         [[NSCursor openHandCursor] push];
-//        [self moveCropRectFromPoint:self.startPoint ToPoint:point];
         return;
     } else {
         [[NSCursor arrowCursor] set];
@@ -324,12 +320,6 @@
     NSString *rectString = [[NSUserDefaults standardUserDefaults] stringForKey:kCropRectKey];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         if(rectString) [self setCropRect:NSRectFromString(rectString)];
-//        [self setCropRect:(NSRect){
-//           250,
-//           250,
-//           800,
-//           600
-//        }];
     });
     
     self.controls = [[LNVideoControlsViewController alloc] initWithNibName:@"LNVideoControlsViewController" bundle:nil];

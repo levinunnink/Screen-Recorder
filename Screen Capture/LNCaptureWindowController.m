@@ -166,10 +166,11 @@
 - (IBAction)setPreset:(id)sender
 {
     NSString *selectedPreset = [sender titleOfSelectedItem];
+    NSRect currentScreenFrame = [NSScreen mainScreen].frame;
     if([selectedPreset isEqualToString:@"Fullscreen"]) {
+        self.capturePanel.cropRect = currentScreenFrame;
         return;
     }
-    NSRect currentScreenFrame = [NSScreen mainScreen].frame;
     NSArray* components;
     if(![selectedPreset containsString:@" "]) {
         components = @[selectedPreset];

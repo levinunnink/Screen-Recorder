@@ -8,9 +8,22 @@
 
 #import <Cocoa/Cocoa.h>
 
+typedef enum LNCaptureOptionTags {
+    LNTimerNone = 1,
+    LNTimerFive,
+    LNTimerTen,
+    LNAudioNone,
+    LNShowMouseClicks,
+    LNAudioMic,
+} LNCaptureOptionTags;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface LNVideoControlsViewController : NSViewController
+
+@property (weak) IBOutlet NSMenu *captureOptionsMenu;
+
+- (IBAction)setSessionOptions:(id)sender;
 
 @end
 
