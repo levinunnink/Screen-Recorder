@@ -161,6 +161,34 @@
     [self.window orderOut:self];
 }
 
+#pragma mark - Actions
+
+- (IBAction)setPreset:(id)sender
+{
+    NSString *selectedPreset = [sender titleOfSelectedItem];
+    if([selectedPreset isEqualToString:@"Fullscreen"]) {
+        return;
+    }
+    NSRect currentScreenFrame = [NSScreen mainScreen].frame;
+    NSArray* components;
+    if(![selectedPreset containsString:@" "]) {
+        components = @[selectedPreset];
+    } else {
+        components = [selectedPreset componentsSeparatedByString:@" "];
+    }
+    NSArray* sizeComponents = [components.lastObject componentsSeparatedByString:@"×"];
+    CGFloat width = [[sizeComponents objectAtIndex:0] floatValue];
+    CGFloat height = [[sizeComponents objectAtIndex:1] floatValue];
+    
+    CGRect newRect = (CGRect){
+        currentScreenFrame.size.width / 2 - (width/2),
+        currentScreenFrame.size.height / 2 - (height / 2),
+        width,
+        height
+    };
+    self.capturePanel.cropRect = newRect;
+}
+
 #pragma mark NSRsponder
 
 - (void)mouseDown:(NSEvent *)theEvent

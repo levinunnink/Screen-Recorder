@@ -74,11 +74,11 @@
                                     <items>
                                         <menuItem title="Preset" hidden="YES" enabled="NO" id="Yyl-qI-d9X"/>
                                         <menuItem title="Apple iPhone" enabled="NO" id="7dJ-DV-fP7"/>
-                                        <menuItem title="iPhone 8 - 375x667" image="icn.iPhone8" id="Azj-ti-w3E"/>
-                                        <menuItem title="iPhone 8 Plus - 414x736" image="icn.iPhone8" id="Ddv-7y-W6U"/>
-                                        <menuItem title="iPhone SE - 320x568" image="icn.iPhone8" id="RHi-fc-nkw"/>
-                                        <menuItem title="iPhone XS - 375x812" image="icn.iPhoneX" id="W1E-KN-5bW"/>
-                                        <menuItem title="iPhone XR - 414x896" image="icn.iPhoneX" id="kzc-lx-Xwr"/>
+                                        <menuItem title="iPhone 8 - 375×667" image="icn.iPhone8" id="Azj-ti-w3E"/>
+                                        <menuItem title="iPhone 8 Plus - 414×736" image="icn.iPhone8" id="Ddv-7y-W6U"/>
+                                        <menuItem title="iPhone SE - 320×568" image="icn.iPhone8" id="RHi-fc-nkw"/>
+                                        <menuItem title="iPhone XS - 375×812" image="icn.iPhoneX" id="W1E-KN-5bW"/>
+                                        <menuItem title="iPhone XR - 414×896" image="icn.iPhoneX" id="kzc-lx-Xwr"/>
                                         <menuItem isSeparatorItem="YES" id="B4c-JL-LxC"/>
                                         <menuItem title="Web" enabled="NO" id="1Yx-xZ-gF6"/>
                                         <menuItem title="1366×768" image="icn.Desktop.small" id="9aH-oj-t4P"/>
@@ -92,6 +92,9 @@
                                     </items>
                                 </menu>
                             </popUpButtonCell>
+                            <connections>
+                                <action selector="setPreset:" target="-1" id="g8I-u1-LmY"/>
+                            </connections>
                         </popUpButton>
                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="zdn-Js-4iz">
                             <rect key="frame" x="122" y="0.0" width="20" height="45"/>
@@ -132,6 +135,9 @@
                                     </items>
                                 </menu>
                             </popUpButtonCell>
+                            <connections>
+                                <action selector="setSessionOptions:" target="-1" id="KhQ-jE-XSX"/>
+                            </connections>
                         </popUpButton>
                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="zwc-Xa-J1e">
                             <rect key="frame" x="218" y="0.0" width="20" height="45"/>
