@@ -128,6 +128,9 @@
 {
     CGPoint point = [self convertPoint:event.locationInWindow fromView:nil];
     CALayer* layer = [self.layer hitTest:point];
+    if(_isRecording) {
+        return [[NSCursor arrowCursor] set];
+    }
     if ([layer isKindOfClass:[LNResizeHandle class]]) {
         [[(LNResizeHandle*)layer cursor] push];
         return;
