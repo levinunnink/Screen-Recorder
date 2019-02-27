@@ -27,16 +27,14 @@
     // Set the session preset as you wish
     self.mSession.sessionPreset = AVCaptureSessionPresetHigh;
     
-    // If you're on a multi-display system and you want to capture a secondary display,
-    // you can call CGGetActiveDisplayList() to get the list of all active displays.
-    // For this example, we just specify the main display.
     CGDirectDisplayID displayId = kCGDirectMainDisplay;
-    
-    // Create a ScreenInput with the display and add it to the session
+    if ([[[NSScreen mainScreen] deviceDescription] valueForKey:@"NSScreenNumber"]){
+        displayId = (CGDirectDisplayID)[[[[NSScreen mainScreen] deviceDescription] valueForKey:@"NSScreenNumber"] pointerValue];
+    }
+    CGRect captureRect = options.captureRect;
     AVCaptureScreenInput *input = [[AVCaptureScreenInput alloc] initWithDisplayID:displayId];
-    input.cropRect = options.captureRect;
+    input.cropRect = captureRect;
     input.capturesMouseClicks = options.showMouseClicks;
-    DLOG(@"Crop Rect %@ %@", NSStringFromRect(input.cropRect), NSStringFromRect(options.captureRect));
     
     if ([self.mSession canAddInput:input])
         [self.mSession addInput:input];

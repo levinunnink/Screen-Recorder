@@ -52,6 +52,7 @@
     if(self.captureDelegate) [self.captureDelegate recordingStarted];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.02 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         self.captureSession = [LNCaptureSession new];
+        DLOG(@"Current Screen %@ %@", [NSScreen mainScreen], self.capturePanel.screen);
         [self.captureSession beginRecordingWithOptions:[LNCaptureSessionOptions currentOptions]];
     });
 }
