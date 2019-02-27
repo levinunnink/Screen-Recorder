@@ -43,6 +43,8 @@
 		89DC06622225C4B10025550B /* LNControlsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 89DC06612225C4B10025550B /* LNControlsView.m */; };
 		89DC06652225D7E80025550B /* LNCaptureSessionOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 89DC06642225D7E80025550B /* LNCaptureSessionOptions.m */; };
 		89DC06682225EB9A0025550B /* LNCaptureSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 89DC06672225EB9A0025550B /* LNCaptureSession.m */; };
+		89DC068E22271B940025550B /* LNWindowInspector.m in Sources */ = {isa = PBXBuildFile; fileRef = 89DC068D22271B940025550B /* LNWindowInspector.m */; };
+		89DC0691222723D30025550B /* LNWindowSelector.m in Sources */ = {isa = PBXBuildFile; fileRef = 89DC0690222723D30025550B /* LNWindowSelector.m */; };
 		89FA814618C939EC00AE95B3 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89FA814518C939EC00AE95B3 /* AVFoundation.framework */; };
 		89FA814918C9467700AE95B3 /* LNGIFConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 89FA814818C9467700AE95B3 /* LNGIFConverter.m */; };
 		89FA814B18C94B0D00AE95B3 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89FA814A18C94B0D00AE95B3 /* CoreMedia.framework */; };
@@ -99,6 +101,10 @@
 		89DC06642225D7E80025550B /* LNCaptureSessionOptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LNCaptureSessionOptions.m; sourceTree = "<group>"; };
 		89DC06662225EB9A0025550B /* LNCaptureSession.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LNCaptureSession.h; sourceTree = "<group>"; };
 		89DC06672225EB9A0025550B /* LNCaptureSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LNCaptureSession.m; sourceTree = "<group>"; };
+		89DC068C22271B940025550B /* LNWindowInspector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LNWindowInspector.h; sourceTree = "<group>"; };
+		89DC068D22271B940025550B /* LNWindowInspector.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LNWindowInspector.m; sourceTree = "<group>"; };
+		89DC068F222723D30025550B /* LNWindowSelector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LNWindowSelector.h; sourceTree = "<group>"; };
+		89DC0690222723D30025550B /* LNWindowSelector.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LNWindowSelector.m; sourceTree = "<group>"; };
 		89FA814518C939EC00AE95B3 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		89FA814718C9467700AE95B3 /* LNGIFConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LNGIFConverter.h; sourceTree = "<group>"; };
 		89FA814818C9467700AE95B3 /* LNGIFConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LNGIFConverter.m; sourceTree = "<group>"; };
@@ -275,6 +281,10 @@
 				89DC06642225D7E80025550B /* LNCaptureSessionOptions.m */,
 				89DC06662225EB9A0025550B /* LNCaptureSession.h */,
 				89DC06672225EB9A0025550B /* LNCaptureSession.m */,
+				89DC068C22271B940025550B /* LNWindowInspector.h */,
+				89DC068D22271B940025550B /* LNWindowInspector.m */,
+				89DC068F222723D30025550B /* LNWindowSelector.h */,
+				89DC0690222723D30025550B /* LNWindowSelector.m */,
 			);
 			name = Capture;
 			sourceTree = "<group>";
@@ -424,6 +434,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				89DC0691222723D30025550B /* LNWindowSelector.m in Sources */,
 				89DC065A2224AC3C0025550B /* LNResizeHandle.m in Sources */,
 				89FA815A18CA5B0000AE95B3 /* LNCaptureButtonCell.m in Sources */,
 				89FA815E18CA949900AE95B3 /* LNOverlayView.m in Sources */,
@@ -431,6 +442,7 @@
 				89DC06682225EB9A0025550B /* LNCaptureSession.m in Sources */,
 				89D6B46F18C91F0C006465EC /* LNCaptureAppDelegate.m in Sources */,
 				89D6B49718C923F2006465EC /* LNCapturePanel.m in Sources */,
+				89DC068E22271B940025550B /* LNWindowInspector.m in Sources */,
 				89DC06652225D7E80025550B /* LNCaptureSessionOptions.m in Sources */,
 				89D6B46818C91F0C006465EC /* main.m in Sources */,
 				89D6B49318C9224F006465EC /* LNCaptureWindowController.m in Sources */,

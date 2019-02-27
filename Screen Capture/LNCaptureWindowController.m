@@ -63,7 +63,13 @@
     DMARK;
     self.window.ignoresMouseEvents = NO;
     [self endScreenCapture];
-    [self.captureDelegate cancelScreenCapture];
+    [[LNCaptureSession currentSession] endRecordingComplete:^(NSError *error, NSURL *recordingURL) {
+        if(error) return DLOG(@"Got error while recording %@", error);
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[recordingURL path]])
+        {
+            [[NSFileManager defaultManager] removeItemAtPath:[recordingURL path] error:nil];
+        }
+    }];
 }
 
 #pragma mark NSWindowDelegate
@@ -83,6 +89,12 @@
     [self.window setFrame:screen.frame display:YES];
     [self showWindow:self];
     [self.capturePanel becomeKeyWindow];
+}
+
+- (void)endRecordingComplete:(void (^ _Nullable)(NSError *error, NSURL *fileURL))complete;
+{
+    self.window.ignoresMouseEvents = NO;
+    [[LNCaptureSession currentSession] endRecordingComplete:complete];
 }
 
 - (void)endScreenCapture

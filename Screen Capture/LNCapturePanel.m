@@ -9,7 +9,9 @@
 #import "LNCapturePanel.h"
 #import <QuartzCore/QuartzCore.h>
 #import "LNResizeHandle.h"
+#import "LNWindowSelector.h"
 #import "LNVideoControlsViewController.h"
+#import "LNWindowInspector.h"
 
 #define kCropRectKey @"LNCropRectKey"
 
@@ -18,11 +20,16 @@
 }
 @property (nonatomic, assign) NSRect cropRect;
 @property (nonatomic, strong) CAShapeLayer *cropLine;
-@property (strong) NSMutableArray *resizeHandles;
+@property (strong) NSMutableArray<LNResizeHandle*>*resizeHandles;
+@property (strong) NSMutableArray<LNWindowSelector*>*windowSelectors;
 @property (strong) CALayer *backgroundColorLayer;
 @property (assign) CGPoint startPoint;
 @property (assign) CGRect startRect;
 @property (assign) LNResizeHandle *activeHandle;
+@property (strong) NSArray<NSDictionary*>* windows;
+@property (strong) LNWindowInspector *windowInspector;
+@property (strong) NSRunningApplication* foremostApplication;
+@property (strong) NSDictionary* foremostWindowRect;
 
 @end
 
@@ -52,9 +59,58 @@
         self.backgroundColorLayer.backgroundColor = [NSColor colorWithWhite:0.0 alpha:0.5].CGColor;
         [[self layer] addSublayer:self.backgroundColorLayer];
         self.resizeHandles = [NSMutableArray arrayWithCapacity:8];
+        self.windowInspector = [LNWindowInspector new];
+        [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(foremostAppActivated:) name:NSWorkspaceDidActivateApplicationNotification object:nil];
+        DLOG(@"Windows %@", self.windows);
     }
     
     return self;
+}
+
+- (void)foremostAppActivated:(NSNotification*)sender
+{
+    DMARK;
+    NSMutableArray *newSelectors = [NSMutableArray new];
+    dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+        self.foremostApplication = sender.userInfo[NSWorkspaceApplicationKey];
+        NSArray *allWindows = [self.windowInspector getWindows];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            for (NSDictionary *windowInfo in [[allWindows reverseObjectEnumerator] allObjects]) {
+                if([windowInfo[@"processID"] intValue] == self.foremostApplication.processIdentifier){
+                    LNWindowSelector *selector = [LNWindowSelector layer];
+                    DLOG(@"Window Info %@", windowInfo);
+                    CGPoint windowOrigin = (CGPoint){
+                        [[[windowInfo[@"windowOrigin"] componentsSeparatedByString:@"/"] firstObject] floatValue],
+                        [[[windowInfo[@"windowOrigin"] componentsSeparatedByString:@"/"] lastObject] floatValue]
+                    };
+                    CGSize windowSize = (CGSize){
+                        [[[windowInfo[@"windowSize"] componentsSeparatedByString:@"*"] firstObject] floatValue],
+                        [[[windowInfo[@"windowSize"] componentsSeparatedByString:@"*"] lastObject] floatValue]
+                    };
+                    CGRect windowRect = (CGRect){
+                        windowOrigin.x,
+                        (self.layer.bounds.size.height-(windowSize.height+windowOrigin.y)),
+                        windowSize.width,
+                        windowSize.height
+                    };
+                    selector.path = CGPathCreateWithRect(windowRect, nil);
+                    selector.strokeColor = [NSColor blueColor].CGColor;
+                    selector.lineWidth = 2.0;
+                    selector.opacity = 0.0;
+                    selector.fillColor = [NSColor colorWithWhite:1.0 alpha:0.1].CGColor;
+                    [newSelectors addObject:selector];
+                }
+            }
+
+            for(LNWindowSelector *selector in self.windowSelectors) {
+                [selector removeFromSuperlayer];
+            }
+            for(LNWindowSelector *selector in newSelectors) {
+                [self.layer addSublayer:selector];
+            }
+            self.windowSelectors = newSelectors;
+        });
+    });
 }
 
 - (void)setCropRect:(NSRect)cropRect

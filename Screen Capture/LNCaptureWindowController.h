@@ -9,6 +9,8 @@
 #import <Cocoa/Cocoa.h>
 #import "LNCapturePanel.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol SCCaptureDelegate <NSObject>
 
 - (void)beginCaptureForScreen:(NSScreen*)screen;
@@ -26,10 +28,11 @@
 //+ (LNCaptureWindowController*)instance;
 
 - (void)beginScreenCaptureForScreen:(NSScreen*)screen;
-- (void)endScreenCapture;
+- (void)endRecordingComplete:(void (^ _Nullable)(NSError *error, NSURL *fileURL))complete;
 - (void)cancelRecording:(id)sender;
-- (void)stopRecording:(id)sender;
 
 - (IBAction)setPreset:(id)sender;
 
 @end
+
+NS_ASSUME_NONNULL_END
