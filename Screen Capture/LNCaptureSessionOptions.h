@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 +(LNCaptureSessionOptions*)currentOptions;
 
 @property (strong, nullable) AVCaptureDevice *mic;
+@property (strong, nullable) NSString *defaultMicID;
 @property (assign) BOOL showMouseClicks;
 @property (assign) BOOL disableAudioRecording;
 @property (assign) int startDelay;

@@ -9,7 +9,6 @@
 #import "LNCapturePanel.h"
 #import <QuartzCore/QuartzCore.h>
 #import "LNResizeHandle.h"
-#import "LNWindowSelector.h"
 #import "LNVideoControlsViewController.h"
 #import "LNWindowInspector.h"
 
@@ -132,7 +131,6 @@
 {
     CGPoint point = [self convertPoint:event.locationInWindow fromView:nil];
     CALayer* layer = [self.layer hitTest:point];
-//    DLOG(@"Layer: %@", layer);
     if(_isRecording) {
         return [[NSCursor arrowCursor] set];
     }

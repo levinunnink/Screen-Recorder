@@ -77,6 +77,7 @@
             [[NSFileManager defaultManager] removeItemAtPath:[recordingURL path] error:nil];
         }
     }];
+    [self close];
 }
 
 #pragma mark NSWindowDelegate
@@ -198,8 +199,9 @@
         [[[window[@"windowSize"] componentsSeparatedByString:@"*"] firstObject] floatValue],
         [[[window[@"windowSize"] componentsSeparatedByString:@"*"] lastObject] floatValue]
     };
+    CGRect displayRect = [NSScreen mainScreen].frame;
     CGRect windowRect = (CGRect){
-        windowOrigin.x,
+        windowOrigin.x - displayRect.origin.x,
         (self.window.frame.size.height-(windowSize.height+windowOrigin.y)),
         windowSize.width,
         windowSize.height

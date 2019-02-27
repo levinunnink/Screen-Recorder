@@ -58,6 +58,7 @@
         case LNAudioNone:
             self.selectedMicID = nil;
             [LNCaptureSessionOptions currentOptions].mic = nil;
+            [LNCaptureSessionOptions currentOptions].defaultMicID = nil;
             break;
         case LNShowMouseClicks:
             [LNCaptureSessionOptions currentOptions].showMouseClicks = ![LNCaptureSessionOptions currentOptions].showMouseClicks;
@@ -67,6 +68,7 @@
                 if ([mic.localizedName isEqualToString:item.title]) {
                     [LNCaptureSessionOptions currentOptions].mic = mic;
                     self.selectedMicID = mic.uniqueID;
+                    [LNCaptureSessionOptions currentOptions].defaultMicID = mic.uniqueID;
                 }
             }
             [self requestAudioPermission];
@@ -112,6 +114,10 @@
         micItem.title = mic.localizedName;
         if(self.selectedMicID && [mic.uniqueID isEqualToString:self.selectedMicID]) {
             micItem.state = NSOnState;
+        }
+        if([[LNCaptureSessionOptions currentOptions].defaultMicID isEqualToString:mic.uniqueID]) {
+            micItem.state = NSOnState;
+            [LNCaptureSessionOptions currentOptions].mic = mic;
         }
         DLOG(@"Settings %d", [LNCaptureSessionOptions currentOptions].disableAudioRecording);
         micItem.enabled = ![LNCaptureSessionOptions currentOptions].disableAudioRecording;
@@ -213,7 +219,7 @@
                 return complete();
             }
             self.recordButton.enabled = NO;
-            [self.recordButton setTitle:[NSString stringWithFormat:@"%d s...", currentSeconds]];
+            [self.recordButton setTitle:[NSString stringWithFormat:@"%d", currentSeconds]];
             currentSeconds = currentSeconds - 1;
         }];
     });
