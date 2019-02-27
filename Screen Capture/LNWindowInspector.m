@@ -163,5 +163,17 @@ void WindowListApplierFunction(const void *inputDictionary, void *context)
     return self.arrayController.arrangedObjects;
 }
 
+- (NSDictionary*)getFrontWindow
+{
+    NSArray<NSDictionary*>*windows = [self getWindows];
+    NSRunningApplication *frontmostApplication = [NSWorkspace sharedWorkspace].frontmostApplication;
+    NSDictionary *frontWindow;
+    for(NSDictionary *window in [[windows reverseObjectEnumerator] allObjects]) {
+        if([window[kWindowProcessID] intValue] == frontmostApplication.processIdentifier) {
+            frontWindow = window;
+        }
+    }
+    return frontWindow;
+}
 
 @end

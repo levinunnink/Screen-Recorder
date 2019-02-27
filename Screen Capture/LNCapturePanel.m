@@ -21,7 +21,6 @@
 @property (nonatomic, assign) NSRect cropRect;
 @property (nonatomic, strong) CAShapeLayer *cropLine;
 @property (strong) NSMutableArray<LNResizeHandle*>*resizeHandles;
-@property (strong) NSMutableArray<LNWindowSelector*>*windowSelectors;
 @property (strong) CALayer *backgroundColorLayer;
 @property (assign) CGPoint startPoint;
 @property (assign) CGRect startRect;
@@ -44,9 +43,7 @@
 
 @end
 
-@implementation SCCapturePanelBackgroundView {
-    LNSelectType _selectType;
-}
+@implementation SCCapturePanelBackgroundView
 
 - (id) initWithFrame:(NSRect)frameRect
 {
@@ -61,9 +58,6 @@
         self.backgroundColorLayer.backgroundColor = [NSColor colorWithWhite:0.0 alpha:0.5].CGColor;
         [[self layer] addSublayer:self.backgroundColorLayer];
         self.resizeHandles = [NSMutableArray arrayWithCapacity:8];
-        self.windowInspector = [LNWindowInspector new];
-        [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(handleForemostAppChangeNotification:) name:NSWorkspaceDidActivateApplicationNotification object:nil];
-        self.foremostApplication = [NSWorkspace sharedWorkspace].frontmostApplication;
     }
     
     return self;
@@ -72,8 +66,6 @@
 - (void)setCropRect:(NSRect)cropRect
 {
     if(cropRect.size.height == 0 || cropRect.size.width == 0) {
-//        self.layer.mask = nil;
-//        [self.cropLine setHidden:YES];
         return;
     }
     _cropRect = cropRect;
@@ -126,27 +118,6 @@
     [[NSUserDefaults standardUserDefaults] setObject:NSStringFromRect(cropRect) forKey:kCropRectKey];
 }
 
-- (void)setSelectType:(LNSelectType)selectType
-{
-    _selectType = selectType;
-    if(selectType == LNSelectTypeSnapToWindow) {
-        self.backgroundColorLayer.hidden = YES;
-        for(LNResizeHandle *handle in self.resizeHandles) {
-            handle.hidden = YES;
-        }
-        self.cropLine.hidden = YES;
-    } else {
-        self.backgroundColorLayer.hidden = NO;
-        for(LNResizeHandle *handle in self.resizeHandles) {
-            handle.hidden = NO;
-        }
-        for(LNWindowSelector *selector in self.windowSelectors) {
-            [selector removeFromSuperlayer];
-        }
-        self.cropLine.hidden = NO;
-    }
-}
-
 - (void)mouseEntered:(NSEvent *)event
 {
     [[NSCursor crosshairCursor] push];
@@ -164,18 +135,6 @@
 //    DLOG(@"Layer: %@", layer);
     if(_isRecording) {
         return [[NSCursor arrowCursor] set];
-    }
-    if(_selectType == LNSelectTypeSnapToWindow) {
-        BOOL foundTopLayer = NO;
-        for(LNWindowSelector *selector in [[self.windowSelectors reverseObjectEnumerator] allObjects]) {
-            if(CGRectContainsPoint(selector.frame, point) && !foundTopLayer) {
-                selector.opacity = 1;
-//                foundTopLayer = YES;
-            } else {
-                selector.opacity = 0;
-            }
-            return;
-        }
     }
     if ([layer isKindOfClass:[LNResizeHandle class]]) {
         [[(LNResizeHandle*)layer cursor] push];
@@ -223,15 +182,6 @@
 - (void)mouseUp:(NSEvent *)event
 {
     DMARK;
-    CGPoint point = [self convertPoint:event.locationInWindow fromView:nil];
-    CALayer* layer = [self.layer hitTest:point];
-    
-    if ([layer isKindOfClass:[LNWindowSelector class]]) {
-        [self setSelectType:LNSelectTypeMarquee];
-        [self setCropRect:layer.frame];
-        return;
-    }
-
     self.activeHandle = nil;
 }
 
@@ -249,15 +199,6 @@
     self.backgroundColorLayer.frame = CGRectMake(0, 0, frameRect.size.width, frameRect.size.height);
     [CATransaction commit];
     [self updateTrackingAreas];
-}
-
-#pragma mark - Notifications
-
-- (void)handleForemostAppChangeNotification:(NSNotification*)sender
-{
-    [self.window makeKeyWindow];
-    self.foremostApplication = sender.userInfo[NSWorkspaceApplicationKey];
-    [self configureWindowSnapGuides];
 }
 
 #pragma mark - LNLayerHandleDelegate
@@ -365,31 +306,6 @@
     }
 }
 
-- (void)configureWindowSnapGuides
-{
-    DMARK;
-    NSMutableArray *newSelectors = [NSMutableArray new];
-    dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-        NSArray *allWindows = [self.windowInspector getWindows];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            for (NSDictionary *windowInfo in [[allWindows reverseObjectEnumerator] allObjects]) {
-                if([windowInfo[@"processID"] intValue] == self.foremostApplication.processIdentifier){
-                    LNWindowSelector *selector = [LNWindowSelector windowSelectorWithWindowObject:windowInfo positionedInFrame:self.layer.bounds];
-                    [newSelectors addObject:selector];
-                }
-            }
-            
-            for(LNWindowSelector *selector in self.windowSelectors) {
-                [selector removeFromSuperlayer];
-            }
-            for(LNWindowSelector *selector in newSelectors) {
-                [self.layer addSublayer:selector];
-            }
-            self.windowSelectors = newSelectors;
-        });
-    });
-}
-
 - (void)setIsRecording:(BOOL)isRecording
 {
     _isRecording = isRecording;
@@ -495,11 +411,6 @@
 - (CGRect)cropRect
 {
     return self.bgView.cropRect;
-}
-
-- (void)setSelectType:(LNSelectType)selectType
-{
-    [self.bgView setSelectType:selectType];
 }
 
 - (void)performClose:(id)sender

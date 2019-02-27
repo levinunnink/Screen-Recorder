@@ -13,6 +13,7 @@
 #import "LNCaptureButtonCell.h"
 #import "LNCaptureSessionOptions.h"
 #import "LNCaptureSession.h"
+#import "LNWindowInspector.h"
 
 @interface LNCaptureWindowController () <NSWindowDelegate>
 
@@ -128,7 +129,14 @@
         return;
     }
     if([selectedPreset isEqualToString:@"Snap to window"]) {
-        self.capturePanel.selectType = LNSelectTypeSnapToWindow;
+        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+            LNWindowInspector *windowInspector = [LNWindowInspector new];
+            NSDictionary* frontWindow = [windowInspector getFrontWindow];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                CGRect windowRect = [self windowToRect: frontWindow];
+                self.capturePanel.cropRect = windowRect;
+            });
+        });
         return;
     }
     NSArray* components;
@@ -179,6 +187,25 @@
 }
 
 #pragma mark Private Helpers
+
+- (CGRect)windowToRect:(NSDictionary*)window
+{
+    CGPoint windowOrigin = (CGPoint){
+        [[[window[@"windowOrigin"] componentsSeparatedByString:@"/"] firstObject] floatValue],
+        [[[window[@"windowOrigin"] componentsSeparatedByString:@"/"] lastObject] floatValue]
+    };
+    CGSize windowSize = (CGSize){
+        [[[window[@"windowSize"] componentsSeparatedByString:@"*"] firstObject] floatValue],
+        [[[window[@"windowSize"] componentsSeparatedByString:@"*"] lastObject] floatValue]
+    };
+    CGRect windowRect = (CGRect){
+        windowOrigin.x,
+        (self.window.frame.size.height-(windowSize.height+windowOrigin.y)),
+        windowSize.width,
+        windowSize.height
+    };
+    return windowRect;
+}
 
 - (LNCapturePanel*)capturePanel
 {

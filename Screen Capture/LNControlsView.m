@@ -14,7 +14,11 @@
     NSBezierPath *mainPath = [NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:3 yRadius:3];
     [mainPath setClip];
     [[NSColor controlBackgroundColor] setFill];
-    [[NSColor unemphasizedSelectedContentBackgroundColor] setStroke];
+    if (@available(macOS 10.14, *)) {
+        [[NSColor unemphasizedSelectedContentBackgroundColor] setStroke];
+    } else {
+        [[NSColor selectedContentBackgroundColor] setStroke];
+    }
     NSRectFill(self.bounds);
     [mainPath setLineWidth:1.0];
     [mainPath stroke];

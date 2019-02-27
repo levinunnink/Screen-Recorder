@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface LNWindowInspector : NSObject
 
 - (NSArray<NSDictionary*>*)getWindows;
+- (NSDictionary*)getFrontWindow;
 
 @end
 
