@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (strong, nullable) AVCaptureDevice *mic;
 @property (assign) BOOL showMouseClicks;
+@property (assign) BOOL disableAudioRecording;
 @property (assign) int startDelay;
 @property (assign) CGRect captureRect;
 

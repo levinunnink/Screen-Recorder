@@ -25,7 +25,18 @@
     [super viewDidLoad];
     
     [self setupMenu];
+    [[LNCaptureSessionOptions currentOptions] addObserver:self forKeyPath:@"disableAudioRecording" options:NSKeyValueObservingOptionNew context:nil];
     // Do view setup here.
+}
+
+- (void)dealloc
+{
+    [[LNCaptureSessionOptions currentOptions] removeObserver:self forKeyPath:@"disableAudioRecording"];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    [self setupMenu];
 }
 
 - (IBAction)setSessionOptions:(id)sender
@@ -78,6 +89,14 @@
     }];
 }
 
+- (IBAction)closeSession:(id)sender
+{
+    [self.countdownTimer invalidate];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLNVideoControllerEndCaptureNotification object:nil];
+}
+
+#pragma mark - Private Helpers
+
 - (void)setupMenu
 {
     while([self.captureOptionsMenu itemWithTag:LNAudioMic]) {
@@ -94,6 +113,8 @@
         if(self.selectedMicID && [mic.uniqueID isEqualToString:self.selectedMicID]) {
             micItem.state = NSOnState;
         }
+        DLOG(@"Settings %d", [LNCaptureSessionOptions currentOptions].disableAudioRecording);
+        micItem.enabled = ![LNCaptureSessionOptions currentOptions].disableAudioRecording;
         micItem.tag = LNAudioMic;
         [self.captureOptionsMenu insertItem:micItem atIndex:[self.captureOptionsMenu indexOfItem:noneAudioItem]];
     }
@@ -115,7 +136,16 @@
         AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
         self.audioGranted = status == AVAuthorizationStatusAuthorized;
         if(status != AVAuthorizationStatusAuthorized) {
+            // We have to do this because the window makes the alert unclickable
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.view.window setIgnoresMouseEvents:YES];
+                [self.view.window setLevel:NSNormalWindowLevel];
+            });
             [AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio completionHandler:^(BOOL granted) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.view.window setIgnoresMouseEvents:NO];
+                    [self.view.window setLevel:NSStatusWindowLevel];
+                });
                 self.audioGranted = granted;
                 if(!granted){
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -133,14 +163,23 @@
     }
 }
 
-- (void)requestVideoPermissionComplete:(void (^)())complete;
+- (void)requestVideoPermissionComplete:(void (^)(void))complete;
 {
     if (@available(macOS 10.14, *)) {
         AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
         self.videoGranted = status == AVAuthorizationStatusAuthorized;
         if(self.videoGranted) return complete();
         if(status != AVAuthorizationStatusAuthorized) {
+            // We have to do this because the window makes the alert unclickable
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.view.window setIgnoresMouseEvents:YES];
+                [self.view.window setLevel:NSNormalWindowLevel];
+            });
             [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.view.window setIgnoresMouseEvents:NO];
+                    [self.view.window setLevel:NSStatusWindowLevel];
+                });
                 self.videoGranted = granted;
                 if(!granted){
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -160,7 +199,7 @@
     }
 }
 
-- (void)countdown:(int)seconds complete:(void (^)())complete
+- (void)countdown:(int)seconds complete:(void (^)(void))complete
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         if(seconds == 0) return complete();

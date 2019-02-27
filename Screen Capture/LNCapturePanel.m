@@ -184,6 +184,9 @@
 {
     CGPoint point = [self convertPoint:event.locationInWindow fromView:nil];
     CALayer* layer = [self.layer hitTest:point];
+    if(_isRecording) {
+        return [[NSCursor arrowCursor] set];
+    }
     if ([layer isKindOfClass:[LNResizeHandle class]]) {
         [[(LNResizeHandle*)layer cursor] push];
         return;
@@ -358,6 +361,7 @@
         handle.hidden = isRecording;
     }
     self.cropLine.hidden = isRecording;
+    self.backgroundColorLayer.backgroundColor = isRecording ? [NSColor colorWithWhite:0.0 alpha:0.7].CGColor : [NSColor colorWithWhite:0.0 alpha:0.5].CGColor;
 }
 
 @end
@@ -382,7 +386,7 @@
     [self setRestorable:NO];
     [self disableSnapshotRestoration];
     [self setIgnoresMouseEvents:NO];
-    
+
     self.bgView = [[SCCapturePanelBackgroundView alloc] initWithFrame:contentRect];
     self.bgView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
     [self.contentView addSubview:self.bgView];
@@ -390,6 +394,15 @@
     NSString *rectString = [[NSUserDefaults standardUserDefaults] stringForKey:kCropRectKey];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         if(rectString) [self setCropRect:NSRectFromString(rectString)];
+        if(!rectString || NSRectFromString(rectString).size.width == 0 || NSRectFromString(rectString).size.height == 0) {
+            // Default rect
+            [self setCropRect:(NSRect) {
+                self.screen.frame.size.width / 2 - 300,
+                self.screen.frame.size.height / 2 - 300,
+                600,
+                600
+            }];
+        }
     });
     
     self.controls = [[LNVideoControlsViewController alloc] initWithNibName:@"LNVideoControlsViewController" bundle:nil];

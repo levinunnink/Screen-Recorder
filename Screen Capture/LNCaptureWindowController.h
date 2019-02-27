@@ -11,21 +11,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol SCCaptureDelegate <NSObject>
+@protocol LNCaptureDelegate <NSObject>
 
-- (void)beginCaptureForScreen:(NSScreen*)screen;
-- (void)endScreenCapture;
-- (void)cancelScreenCapture;
+- (void)recordingStarted;
+- (void)recordingCancelled;
 
 @end
 
 @interface LNCaptureWindowController : NSWindowController
 
-@property (nonatomic, assign) id<SCCaptureDelegate>captureDelegate;
-
+@property (nonatomic, assign) id<LNCaptureDelegate>captureDelegate;
 @property (nonatomic, readonly) LNCapturePanel *capturePanel;
-
-//+ (LNCaptureWindowController*)instance;
+@property (assign) BOOL disableAudioRecording;
 
 - (void)beginScreenCaptureForScreen:(NSScreen*)screen;
 - (void)endRecordingComplete:(void (^ _Nullable)(NSError *error, NSURL *fileURL))complete;
