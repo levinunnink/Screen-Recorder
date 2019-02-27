@@ -13,21 +13,11 @@
 
 @property (nonatomic, strong) AVCaptureSession *mSession;
 @property (nonatomic, strong) AVCaptureMovieFileOutput *mMovieFileOutput;
-@property (nonatomic, copy) void (^complete)(NSError *error, NSURL *fileURL);
+@property (copy) void (^complete)(NSError *error, NSURL *fileURL);
 
 @end
 
 @implementation LNCaptureSession
-
-+ (LNCaptureSession*)currentSession
-{
-    static LNCaptureSession* instance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        instance = [[self alloc] init];
-    });
-    return instance;
-}
 
 - (void)beginRecordingWithOptions:(LNCaptureSessionOptions *)options
 {

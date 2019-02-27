@@ -14,7 +14,11 @@
 #import "LNCaptureSessionOptions.h"
 #import "LNCaptureSession.h"
 
-@interface LNCaptureWindowController () <NSWindowDelegate> @end
+@interface LNCaptureWindowController () <NSWindowDelegate>
+
+@property (strong) LNCaptureSession *captureSession;
+
+@end
 
 @implementation LNCaptureWindowController
 
@@ -25,9 +29,10 @@
                              backing:NSBackingStoreBuffered defer:NO];
     self = [super initWithWindow:panel];
     panel.delegate = self;
-
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startRecording:) name:kLNVideoControllerBeginRecordingNotification object:nil];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startRecording:) name:kLNVideoControllerBeginRecordingNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleControllerEndCaptureNotification:) name:kLNVideoControllerEndCaptureNotification object:nil];
+
     return self;
 }
 
@@ -43,16 +48,17 @@
     [self.capturePanel setIsRecording:YES];
     self.window.ignoresMouseEvents = YES;
     [LNCaptureSessionOptions currentOptions].captureRect = self.capturePanel.cropRect;
-    // We do this to prevent the button showing
+    if(self.captureDelegate) [self.captureDelegate recordingStarted];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.02 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [[LNCaptureSession currentSession] beginRecordingWithOptions:[LNCaptureSessionOptions currentOptions]];
+        self.captureSession = [LNCaptureSession new];
+        [self.captureSession beginRecordingWithOptions:[LNCaptureSessionOptions currentOptions]];
     });
 }
 
 - (IBAction)stopRecording:(id)sender
 {
     self.window.ignoresMouseEvents = NO;
-    [[LNCaptureSession currentSession] endRecordingComplete:^(NSError *error, NSURL *recordingURL) {
+    [self.captureSession endRecordingComplete:^(NSError *error, NSURL *recordingURL) {
         if(error) return DLOG(@"Got error while recording %@", error);
         [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[recordingURL]];
     }];
@@ -63,7 +69,13 @@
     DMARK;
     self.window.ignoresMouseEvents = NO;
     [self endScreenCapture];
-    [self.captureDelegate cancelScreenCapture];
+    [self.captureSession endRecordingComplete:^(NSError *error, NSURL *recordingURL) {
+        if(error) return DLOG(@"Got error while recording %@", error);
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[recordingURL path]])
+        {
+            [[NSFileManager defaultManager] removeItemAtPath:[recordingURL path] error:nil];
+        }
+    }];
 }
 
 #pragma mark NSWindowDelegate
@@ -79,14 +91,26 @@
 
 - (void)beginScreenCaptureForScreen:(NSScreen *)screen
 {
+    [LNCaptureSessionOptions currentOptions].disableAudioRecording = self.disableAudioRecording;
     self.capturePanel.cropRect = NSZeroRect;
     [self.window setFrame:screen.frame display:YES];
     [self showWindow:self];
     [self.capturePanel becomeKeyWindow];
 }
 
+- (void)endRecordingComplete:(void (^ _Nullable)(NSError *error, NSURL *fileURL))complete;
+{
+    self.window.ignoresMouseEvents = NO;
+    [self.capturePanel setIsRecording:NO];
+    [self.captureSession endRecordingComplete:^(NSError *err, NSURL *fileURL) {
+        complete(err, fileURL);
+        [self.window orderOut:nil];
+    }];
+}
+
 - (void)endScreenCapture
 {
+    [self.capturePanel setIsRecording:NO];
     [self.window orderOut:self];
 }
 
@@ -97,7 +121,10 @@
     NSString *selectedPreset = [sender titleOfSelectedItem];
     NSRect currentScreenFrame = [NSScreen mainScreen].frame;
     if([selectedPreset isEqualToString:@"Fullscreen"]) {
-        self.capturePanel.cropRect = currentScreenFrame;
+        DLOG(@"Setting fullscreen %@", NSStringFromRect(currentScreenFrame));
+        self.capturePanel.cropRect = (CGRect){
+            0, 0, currentScreenFrame.size.width, currentScreenFrame.size.height,
+        };
         return;
     }
     NSArray* components;
@@ -117,6 +144,14 @@
         height
     };
     self.capturePanel.cropRect = newRect;
+}
+
+#pragma mark - Notifications
+
+- (void)handleControllerEndCaptureNotification:(NSNotification*)sender
+{
+    [self close];
+    [self.captureDelegate recordingCancelled];
 }
 
 #pragma mark NSRsponder

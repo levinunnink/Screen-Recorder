@@ -18,6 +18,7 @@ typedef enum LNCaptureOptionTags {
 } LNCaptureOptionTags;
 
 #define kLNVideoControllerBeginRecordingNotification @"LNVideoControllerBeginRecordingNotification"
+#define kLNVideoControllerEndCaptureNotification @"LNVideoControllerEndCaptureNotification"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (IBAction)setSessionOptions:(id)sender;
 - (IBAction)beginRecording:(id)sender;
+- (IBAction)closeSession:(id)sender;
 
 @end
 

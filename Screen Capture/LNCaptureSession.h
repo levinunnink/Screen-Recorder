@@ -13,8 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface LNCaptureSession : NSObject
 
-+(LNCaptureSession*)currentSession;
-
 - (void)beginRecordingWithOptions:(LNCaptureSessionOptions*)options;
 - (void)endRecordingComplete:(void (^ _Nullable)(NSError *error, NSURL *fileURL))complete;
 
