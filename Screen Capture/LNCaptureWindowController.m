@@ -101,10 +101,10 @@
 - (void)endRecordingComplete:(void (^ _Nullable)(NSError *error, NSURL *fileURL))complete;
 {
     self.window.ignoresMouseEvents = NO;
-    [self.capturePanel setIsRecording:NO];
     [self.captureSession endRecordingComplete:^(NSError *err, NSURL *fileURL) {
         complete(err, fileURL);
         [self.window orderOut:nil];
+        [self.capturePanel setIsRecording:NO];
     }];
 }
 
