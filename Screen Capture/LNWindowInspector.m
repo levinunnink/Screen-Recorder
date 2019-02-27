@@ -91,6 +91,9 @@ void WindowListApplierFunction(const void *inputDictionary, void *context)
         
         NSString *pid = [NSString stringWithFormat:@"%@", entry[(id)kCGWindowOwnerPID]];
         outputEntry[kWindowProcessID] = pid;
+        
+        outputEntry[@"windowIsOnScreen"] = entry[(id)kCGWindowIsOnscreen];
+        outputEntry[@"windowAlpha"] = entry[(id)kCGWindowAlpha];
 
         // Grab the Window Bounds, it's a dictionary in the array, but we want to display it as a string
         CGRect bounds;

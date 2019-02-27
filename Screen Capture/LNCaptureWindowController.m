@@ -127,6 +127,10 @@
         };
         return;
     }
+    if([selectedPreset isEqualToString:@"Snap to window"]) {
+        self.capturePanel.selectType = LNSelectTypeSnapToWindow;
+        return;
+    }
     NSArray* components;
     if(![selectedPreset containsString:@" "]) {
         components = @[selectedPreset];

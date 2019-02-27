@@ -10,7 +10,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface LNWindowSelector : CAShapeLayer
+@interface LNWindowSelector : CALayer
+
+@property (strong) NSDictionary* representedWindow;
+
++(LNWindowSelector*)windowSelectorWithWindowObject:(NSDictionary*)window positionedInFrame:(CGRect)frame;
 
 @end
 

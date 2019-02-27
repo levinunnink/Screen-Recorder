@@ -88,7 +88,10 @@
                                         <menuItem title="1440×900" image="icn.Desktop.small" id="lrp-wo-KPN"/>
                                         <menuItem title="1280×800" image="icn.Desktop.small" id="iaO-eq-mFz"/>
                                         <menuItem isSeparatorItem="YES" id="sxn-bN-PYn"/>
-                                        <menuItem title="Fullscreen" image="icn.Desktop.small" id="RKX-o5-0q5">
+                                        <menuItem title="Snap to window" image="icn.Snap" id="RKX-o5-0q5">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        </menuItem>
+                                        <menuItem title="Fullscreen" image="icn.Desktop.small" id="sSI-I3-Xm5">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                         </menuItem>
                                     </items>
@@ -211,6 +214,7 @@
         <image name="NSStopProgressFreestandingTemplate" width="14" height="14"/>
         <image name="icn.Desktop.small" width="13" height="11"/>
         <image name="icn.Resize" width="17" height="18"/>
+        <image name="icn.Snap" width="13" height="14"/>
         <image name="icn.iPhone8" width="13" height="20"/>
         <image name="icn.iPhoneX" width="13" height="20"/>
     </resources>
