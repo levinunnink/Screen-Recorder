@@ -44,7 +44,7 @@
     if ([self.mSession canAddOutput:self.mMovieFileOutput])
         [self.mSession addOutput:self.mMovieFileOutput];
     
-    if(options.mic) {
+    if(options.mic && !options.disableAudioRecording) {
         AVCaptureDeviceInput *audioInput = [AVCaptureDeviceInput deviceInputWithDevice:options.mic error:nil];
         if([self.mSession canAddInput:audioInput]) [self.mSession addInput:audioInput];
     }
