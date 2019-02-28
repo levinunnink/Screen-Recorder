@@ -9,30 +9,27 @@
 #import <Cocoa/Cocoa.h>
 #import "LNCapturePanel.h"
 
-@protocol SCCaptureDelegate <NSObject>
+NS_ASSUME_NONNULL_BEGIN
 
-- (void)beginCaptureForScreen:(NSScreen*)screen inRect:(NSRect)rect;
-- (void)endScreenCapture;
-- (void)cancelScreenCapture;
-- (void)captureRectTooSmall;
-- (void)captureRectClickOutside;
+@protocol LNCaptureDelegate <NSObject>
+
+- (void)recordingStarted;
+- (void)recordingCancelled;
 
 @end
 
 @interface LNCaptureWindowController : NSWindowController
 
-@property (nonatomic, assign) id<SCCaptureDelegate>captureDelegate;
-
-@property (nonatomic, assign) BOOL recording;
-@property (nonatomic, assign) BOOL hideStopButton;
-@property (nonatomic, strong) NSString* overlayMessage;
+@property (nonatomic, assign) id<LNCaptureDelegate>captureDelegate;
 @property (nonatomic, readonly) LNCapturePanel *capturePanel;
-
-//+ (LNCaptureWindowController*)instance;
+@property (assign) BOOL disableAudioRecording;
 
 - (void)beginScreenCaptureForScreen:(NSScreen*)screen;
-- (void)endScreenCapture;
+- (void)endRecordingComplete:(void (^ _Nullable)(NSError *error, NSURL *fileURL))complete;
 - (void)cancelRecording:(id)sender;
-- (void)stopRecording:(id)sender;
+
+- (IBAction)setPreset:(id)sender;
 
 @end
+
+NS_ASSUME_NONNULL_END

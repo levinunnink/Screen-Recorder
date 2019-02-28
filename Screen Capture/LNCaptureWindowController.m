@@ -7,58 +7,21 @@
 //
 
 #import "LNCaptureWindowController.h"
+#import "LNVideoControlsViewController.h"
 #import "LNCapturePanel.h"
 #import "LNOverlayView.h"
 #import "LNCaptureButtonCell.h"
-
-#define kMinCropSize (NSSize){ 60 , 60 }
+#import "LNCaptureSessionOptions.h"
+#import "LNCaptureSession.h"
+#import "LNWindowInspector.h"
 
 @interface LNCaptureWindowController () <NSWindowDelegate>
 
-@property (nonatomic, assign) NSPoint startPoint;
-@property (nonatomic, strong) NSButton *confirmationButton;
-@property (nonatomic, strong) NSButton *stopRecordingButton;
-@property (nonatomic, strong) LNOverlayView *overlay;
-@property (nonatomic, assign) BOOL mouseDidDrag;
+@property (strong) LNCaptureSession *captureSession;
 
 @end
 
 @implementation LNCaptureWindowController
-
-//+ (LNCaptureWindowController*)instance
-//{
-//
-//    static LNCaptureWindowController* instance = nil;
-//    static dispatch_once_t onceToken;
-//    dispatch_once(&onceToken, ^{
-//        LNCapturePanel* panel = [[LNCapturePanel alloc]
-//                                        initWithContentRect:NSZeroRect styleMask: NSWindowStyleMaskNonactivatingPanel|NSWindowStyleMaskBorderless
-//                                        backing:NSBackingStoreBuffered defer:NO];
-//        instance = [[LNCaptureWindowController alloc] initWithWindow:panel];
-//        panel.delegate = instance;
-//
-//        NSButton *confirm = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 160, 25)];
-//        [confirm setCell:[[LNCaptureButtonCell alloc] init]];
-//        [confirm setTitle: @"Start Recording"];
-//        [confirm setButtonType:NSMomentaryLightButton]; //Set what type button You want
-//        [confirm setBezelStyle:NSRoundedBezelStyle]; //Set what style You want
-//        confirm.target = instance;
-//        confirm.action = @selector(startRecording:);
-//        instance.confirmationButton = confirm;
-//
-//        NSButton *stop = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 160, 25)];
-//        //[stop setCell:[[LNCaptureButtonCell alloc] init]];
-//        [stop setTitle: @"Stop Recording"];
-//        [stop setKeyEquivalent:@"\E"];
-//        [stop setButtonType:NSMomentaryLightButton]; //Set what type button You want
-//        [stop setBezelStyle:NSRoundedBezelStyle]; //Set what style You want
-//        stop.target = instance;
-//        stop.action = @selector(stopRecording:);
-//        instance.stopRecordingButton = stop;
-//    });
-//
-//    return instance;
-//}
 
 - (id)init
 {
@@ -68,25 +31,9 @@
     self = [super initWithWindow:panel];
     panel.delegate = self;
     
-    NSButton *confirm = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 160, 25)];
-    [confirm setCell:[[LNCaptureButtonCell alloc] init]];
-    [confirm setTitle: @"Start Recording"];
-    [confirm setButtonType:NSMomentaryLightButton]; //Set what type button You want
-    [confirm setBezelStyle:NSRoundedBezelStyle]; //Set what style You want
-    confirm.target = self;
-    confirm.action = @selector(startRecording:);
-    self.confirmationButton = confirm;
-    
-    NSButton *stop = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 160, 25)];
-    //[stop setCell:[[LNCaptureButtonCell alloc] init]];
-    [stop setTitle: @"Stop Recording"];
-    [stop setKeyEquivalent:@"\E"];
-    [stop setButtonType:NSMomentaryLightButton]; //Set what type button You want
-    [stop setBezelStyle:NSRoundedBezelStyle]; //Set what style You want
-    stop.target = self;
-    stop.action = @selector(stopRecording:);
-    self.stopRecordingButton = stop;
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startRecording:) name:kLNVideoControllerBeginRecordingNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleControllerEndCaptureNotification:) name:kLNVideoControllerEndCaptureNotification object:nil];
+
     return self;
 }
 
@@ -97,23 +44,26 @@
 
 #pragma mark Actions
 
-- (void)startRecording:(id)sender
+- (IBAction)startRecording:(id)sender
 {
-    self.recording = YES;
+    [self.capturePanel setIsRecording:YES];
     self.window.ignoresMouseEvents = YES;
-    [self.confirmationButton setHidden:YES];
-    // We do this to prevent the button showing
+    [LNCaptureSessionOptions currentOptions].captureRect = self.capturePanel.cropRect;
+    if(self.captureDelegate) [self.captureDelegate recordingStarted];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.02 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self showStopRecordingButton];
-        [self.captureDelegate beginCaptureForScreen:self.capturePanel.screen inRect:self.capturePanel.cropRect];
+        self.captureSession = [LNCaptureSession new];
+        DLOG(@"Current Screen %@ %@", [NSScreen mainScreen], self.capturePanel.screen);
+        [self.captureSession beginRecordingWithOptions:[LNCaptureSessionOptions currentOptions]];
     });
 }
 
-- (void)stopRecording:(id)sender
+- (IBAction)stopRecording:(id)sender
 {
     self.window.ignoresMouseEvents = NO;
-    [self endScreenCapture];
-    [self.captureDelegate endScreenCapture];
+    [self.captureSession endRecordingComplete:^(NSError *error, NSURL *recordingURL) {
+        if(error) return DLOG(@"Got error while recording %@", error);
+        [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[recordingURL]];
+    }];
 }
 
 - (void)cancelRecording:(id)sender
@@ -121,113 +71,104 @@
     DMARK;
     self.window.ignoresMouseEvents = NO;
     [self endScreenCapture];
-    [self.captureDelegate cancelScreenCapture];
+    [self.captureSession endRecordingComplete:^(NSError *error, NSURL *recordingURL) {
+        if(error) return DLOG(@"Got error while recording %@", error);
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[recordingURL path]])
+        {
+            [[NSFileManager defaultManager] removeItemAtPath:[recordingURL path] error:nil];
+        }
+    }];
+    [self close];
 }
 
 #pragma mark NSWindowDelegate
 
 - (BOOL)windowShouldClose:(id)sender
 {
-    if (!_recording) [self.captureDelegate captureRectClickOutside];
-    //if (self.recording) {
-        [self stopRecording:nil];
-    //}
+    DMARK;
+    [self stopRecording:nil];
     return YES;
-}
-
-- (void)windowWillClose:(NSNotification *)notification
-{
-    
 }
 
 #pragma mark -
 
 - (void)beginScreenCaptureForScreen:(NSScreen *)screen
 {
-    [[NSCursor crosshairCursor] push];
-    
-    self.recording = NO;
-    [self.confirmationButton setHidden:YES];
-    [self.stopRecordingButton setHidden:YES];
+    [LNCaptureSessionOptions currentOptions].disableAudioRecording = self.disableAudioRecording;
     self.capturePanel.cropRect = NSZeroRect;
     [self.window setFrame:screen.frame display:YES];
-    if (!self.overlay.isHidden)
-        [self hideOverlay];
-    [self showOverlay];
     [self showWindow:self];
     [self.capturePanel becomeKeyWindow];
 }
 
+- (void)endRecordingComplete:(void (^ _Nullable)(NSError *error, NSURL *fileURL))complete;
+{
+    self.window.ignoresMouseEvents = NO;
+    [self.captureSession endRecordingComplete:^(NSError *err, NSURL *fileURL) {
+        complete(err, fileURL);
+        [self.window orderOut:nil];
+        [self.capturePanel setIsRecording:NO];
+    }];
+}
+
 - (void)endScreenCapture
 {
-    
-    self.recording = NO;
+    [self.capturePanel setIsRecording:NO];
     [self.window orderOut:self];
 }
 
-#pragma mark NSRsponder
+#pragma mark - Actions
 
-- (void)mouseDown:(NSEvent *)theEvent
+- (IBAction)setPreset:(id)sender
 {
-    
-    if (_recording) return;
-    
-    if (!self.overlay.isHidden)
-        [self hideOverlay];
-    
-    
-    self.mouseDidDrag = NO;
-    
-    [self.confirmationButton setHidden:YES];
-    self.startPoint = [theEvent locationInWindow];
-    self.capturePanel.cropRect = CGRectMake(self.startPoint.x, self.startPoint.y, 0, 0);
-}
-
-- (void)mouseDragged:(NSEvent *)theEvent
-{
-    
-    if (_recording) return;
-    
-    if (!self.overlay.isHidden)
-        [self hideOverlay];
-    
-    self.mouseDidDrag = YES;
-    
-    NSPoint curPoint = [theEvent locationInWindow];
-    CGRect cropRect = (CGRect){
-                          MIN(_startPoint.x, curPoint.x),
-                          MIN(_startPoint.y, curPoint.y),
-                          fabs(_startPoint.x - curPoint.x),
-                          fabs(_startPoint.y - curPoint.y)
-                        };
-    
-    self.capturePanel.cropRect = cropRect;
-}
-
-- (void)mouseUp:(NSEvent *)theEvent
-{
-    DMARK;
-    if (_recording) return;
-    
-    NSPoint curPoint = [theEvent locationInWindow];
-    
-    if (self.capturePanel.cropRect.size.width < kMinCropSize.width   ||
-        self.capturePanel.cropRect.size.height < kMinCropSize.height ||
-        (!NSPointInRect(curPoint, self.capturePanel.cropRect) && !_mouseDidDrag)
-        ) {
-
-        [self.captureDelegate captureRectClickOutside];
-        
-        if (_recording) {
-            [self stopRecording:nil];
-        } else {
-            [self endScreenCapture];
-        }
+    NSString *selectedPreset = [sender titleOfSelectedItem];
+    NSRect currentScreenFrame = [NSScreen mainScreen].frame;
+    if([selectedPreset isEqualToString:@"Fullscreen"]) {
+        DLOG(@"Setting fullscreen %@", NSStringFromRect(currentScreenFrame));
+        self.capturePanel.cropRect = (CGRect){
+            0, 0, currentScreenFrame.size.width, currentScreenFrame.size.height,
+        };
         return;
     }
+    if([selectedPreset isEqualToString:@"Snap to window"]) {
+        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+            LNWindowInspector *windowInspector = [LNWindowInspector new];
+            NSDictionary* frontWindow = [windowInspector getFrontWindow];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                CGRect windowRect = [self windowToRect: frontWindow];
+                self.capturePanel.cropRect = windowRect;
+            });
+        });
+        return;
+    }
+    NSArray* components;
+    if(![selectedPreset containsString:@" "]) {
+        components = @[selectedPreset];
+    } else {
+        components = [selectedPreset componentsSeparatedByString:@" "];
+    }
+    NSArray* sizeComponents = [components.lastObject componentsSeparatedByString:@"×"];
+    CGFloat width = [[sizeComponents objectAtIndex:0] floatValue];
+    CGFloat height = [[sizeComponents objectAtIndex:1] floatValue];
     
-    if (!_recording) [self showConfirmationButton];
+    CGRect newRect = (CGRect){
+        currentScreenFrame.size.width / 2 - (width/2),
+        currentScreenFrame.size.height / 2 - (height / 2),
+        width,
+        height
+    };
+    self.capturePanel.cropRect = newRect;
 }
+
+#pragma mark - Notifications
+
+- (void)handleControllerEndCaptureNotification:(NSNotification*)sender
+{
+    [self close];
+    [self.captureDelegate recordingCancelled];
+}
+
+#pragma mark NSRsponder
 
 - (void)keyDown:(NSEvent *)theEvent
 {
@@ -249,60 +190,29 @@
 
 #pragma mark Private Helpers
 
-- (void)showConfirmationButton
+- (CGRect)windowToRect:(NSDictionary*)window
 {
-    DMARK;
-    DLOG(@"self.confirmationButton %@", self.confirmationButton);
-    [self.capturePanel.contentView addSubview:self.confirmationButton];
-    [self.confirmationButton setFrame:(NSRect){
-        self.capturePanel.cropRect.origin.x + (self.capturePanel.cropRect.size.width / 2) - (self.confirmationButton.frame.size.width / 2),
-        self.capturePanel.cropRect.origin.y + (self.capturePanel.cropRect.size.height / 2) - (self.confirmationButton.frame.size.height / 2),
-        self.confirmationButton.frame.size.width,
-        self.confirmationButton.frame.size.height
-    }];
-    [self.confirmationButton setHidden:NO];
-}
-
-- (void)showStopRecordingButton
-{
-    
-    if (!_hideStopButton) {
-        [self.capturePanel.contentView addSubview:self.stopRecordingButton];
-        
-        NSRect overlayFrame = self.capturePanel.cropRect;
-
-        [self.stopRecordingButton setFrame:(NSRect){
-            overlayFrame.origin.x,
-            overlayFrame.origin.y,
-            self.stopRecordingButton.frame.size.width,
-            self.stopRecordingButton.frame.size.height
-        }];
-        [self.stopRecordingButton setHidden:NO];
-    }
+    CGPoint windowOrigin = (CGPoint){
+        [[[window[@"windowOrigin"] componentsSeparatedByString:@"/"] firstObject] floatValue],
+        [[[window[@"windowOrigin"] componentsSeparatedByString:@"/"] lastObject] floatValue]
+    };
+    CGSize windowSize = (CGSize){
+        [[[window[@"windowSize"] componentsSeparatedByString:@"*"] firstObject] floatValue],
+        [[[window[@"windowSize"] componentsSeparatedByString:@"*"] lastObject] floatValue]
+    };
+    CGRect displayRect = [NSScreen mainScreen].frame;
+    CGRect windowRect = (CGRect){
+        windowOrigin.x - displayRect.origin.x,
+        (self.window.frame.size.height-(windowSize.height+windowOrigin.y)),
+        windowSize.width,
+        windowSize.height
+    };
+    return windowRect;
 }
 
 - (LNCapturePanel*)capturePanel
 {
     return (LNCapturePanel*)self.window;
-}
-
-- (void)showOverlay
-{
-    
-    if (!self.overlay) {
-        self.overlay = [[LNOverlayView alloc] initWithFrame:NSMakeRect(0, 0, 600, 200)];
-        self.overlay.label = self.overlayMessage ? self.overlayMessage : @"Drag on screen to record video.";
-        [self.window.contentView addSubview:self.overlay];
-    }
-    [self.overlay centerInSuperview];
-    [self.overlay setHidden:NO];
-    [self.overlay setNeedsDisplay:YES];
-}
-
-- (void)hideOverlay
-{
-    
-    [self.overlay setHidden:YES];
 }
 
 @end

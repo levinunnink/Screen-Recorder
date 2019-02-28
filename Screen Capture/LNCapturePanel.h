@@ -7,9 +7,12 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "LNResizeHandle.h"
 
 @interface LNCapturePanel : NSPanel
 
-@property (nonatomic, assign) NSRect cropRect;
+@property (nonatomic) NSRect cropRect;
+
+- (void)setIsRecording:(BOOL)isRecording;
 
 @end
