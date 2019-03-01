@@ -163,7 +163,7 @@ void WindowListApplierFunction(const void *inputDictionary, void *context)
     return self.arrayController.arrangedObjects;
 }
 
-- (NSDictionary*)getFrontWindow
+- (NSDictionary* _Nullable)getFrontWindow
 {
     NSArray<NSDictionary*>*windows = [self getWindows];
     NSRunningApplication *frontmostApplication = [NSWorkspace sharedWorkspace].frontmostApplication;

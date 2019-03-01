@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSBezierPath (LNExtensions)
 
-- (CGPathRef)CGPath;
+- (CGPathRef _Nullable)CGPath;
 + (NSBezierPath *)bezierPathWithCGPath:(CGPathRef)pathRef;
 
 @end

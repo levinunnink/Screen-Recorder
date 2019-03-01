@@ -33,7 +33,7 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startRecording:) name:kLNVideoControllerBeginRecordingNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleControllerEndCaptureNotification:) name:kLNVideoControllerEndCaptureNotification object:nil];
-
+    
     return self;
 }
 

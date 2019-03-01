@@ -51,7 +51,11 @@
 {
     CGPathRef thickPath = CGPathCreateCopyByStrokingPath(self.path, NULL, 10, kCGLineCapButt, kCGLineJoinBevel, 0);
     
-    return CGPathContainsPoint(thickPath, NULL, p, false);
+    BOOL containsPoint = CGPathContainsPoint(thickPath, NULL, p, false);
+    
+    CGPathRelease(thickPath);
+    
+    return containsPoint;
 }
 
 - (CGPoint)getRepresentedPoint

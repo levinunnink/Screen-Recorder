@@ -17,7 +17,7 @@
     if (@available(macOS 10.14, *)) {
         [[NSColor unemphasizedSelectedContentBackgroundColor] setStroke];
     } else {
-        [[NSColor selectedContentBackgroundColor] setStroke];
+        [[NSColor lightGrayColor] setStroke];
     }
     NSRectFill(self.bounds);
     [mainPath setLineWidth:1.0];

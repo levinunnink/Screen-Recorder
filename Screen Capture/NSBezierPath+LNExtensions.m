@@ -49,11 +49,11 @@ static void CGPathCallback(void *info, const CGPathElement *element)
     }
 }
 
-- (CGPathRef)CGPath {
+- (CGPathRef _Nullable)CGPath {
     int i, numElements;
     
     // Need to begin a path here.
-    CGPathRef           immutablePath = NULL;
+    CGPathRef immutablePath = NULL;
     
     // Then draw the path elements.
     numElements = (int)[self elementCount];
