@@ -396,7 +396,7 @@
         case 53: //Esc
         {
             if ([self.delegate windowShouldClose:self]) {
-                [self orderOut:self];     
+                [[NSNotificationCenter defaultCenter] postNotificationName:kLNVideoControllerEndCaptureNotification object:nil];
             }
             break;
         }

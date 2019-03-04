@@ -43,6 +43,13 @@
     return YES;
 }
 
+- (void)windowWillClose:(NSNotification *)notification
+{
+    DMARK;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
+}
+
 #pragma mark Actions
 
 - (IBAction)startRecording:(id)sender
@@ -87,7 +94,7 @@
 - (BOOL)windowShouldClose:(id)sender
 {
     DMARK;
-    [self stopRecording:nil];
+//    [self stopRecording:nil];
     return YES;
 }
 
@@ -105,11 +112,9 @@
 - (void)endRecordingComplete:(void (^ _Nullable)(NSError *error, NSURL *fileURL))complete;
 {
     self.window.ignoresMouseEvents = NO;
-    [self.captureSession endRecordingComplete:^(NSError *err, NSURL *fileURL) {
-        complete(err, fileURL);
-        [self.window orderOut:nil];
-        [self.capturePanel setIsRecording:NO];
-    }];
+    [self endScreenCapture];
+    [self.captureSession endRecordingComplete:complete];
+    [self close];
 }
 
 - (void)endScreenCapture
@@ -167,7 +172,6 @@
 {
     [self close];
     [self.captureDelegate recordingCancelled];
-    [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
 }
 
 - (void)handleApplicationChangedNotification:(NSNotification*)sender
