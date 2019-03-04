@@ -62,6 +62,11 @@
     return self;
 }
 
+- (BOOL)acceptsFirstMouse
+{
+    return YES;
+}
+
 - (void)setCropRect:(NSRect)cropRect
 {
     if(cropRect.size.height == 0 || cropRect.size.width == 0) {
@@ -129,11 +134,13 @@
 
 - (void)mouseMoved:(NSEvent *)event
 {
+    DMARK;
     CGPoint point = [self convertPoint:event.locationInWindow fromView:nil];
     CALayer* layer = [self.layer hitTest:point];
     if(_isRecording) {
         return [[NSCursor arrowCursor] set];
     }
+
     if ([layer isKindOfClass:[LNResizeHandle class]]) {
         [[(LNResizeHandle*)layer cursor] push];
         return;
@@ -186,7 +193,7 @@
 - (void)updateTrackingAreas
 {
     [super updateTrackingAreas];
-    [self addTrackingArea:[[NSTrackingArea alloc] initWithRect:self.frame options:NSTrackingMouseMoved+NSTrackingActiveAlways owner:self userInfo:nil]];
+    [self addTrackingArea:[[NSTrackingArea alloc] initWithRect:self.frame options:NSTrackingMouseMoved|NSTrackingActiveAlways|NSTrackingMouseEnteredAndExited owner:self userInfo:nil]];
 }
 
 - (void)setFrame:(NSRect)frameRect

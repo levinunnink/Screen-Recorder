@@ -33,6 +33,7 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startRecording:) name:kLNVideoControllerBeginRecordingNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleControllerEndCaptureNotification:) name:kLNVideoControllerEndCaptureNotification object:nil];
+    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(handleApplicationChangedNotification:) name:NSWorkspaceDidActivateApplicationNotification object:nil];
     
     return self;
 }
@@ -166,6 +167,13 @@
 {
     [self close];
     [self.captureDelegate recordingCancelled];
+    [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
+}
+
+- (void)handleApplicationChangedNotification:(NSNotification*)sender
+{
+    DMARK;
+    if(self.window.isVisible) [self.window makeKeyAndOrderFront:nil];
 }
 
 #pragma mark NSRsponder
