@@ -356,6 +356,7 @@
     });
     
     self.controls = [[LNVideoControlsViewController alloc] initWithNibName:@"LNVideoControlsViewController" bundle:nil];
+    self.controls.view.wantsLayer = YES; // Otherwise this will be placed below the crop layer on older macOS Versions
     [self.contentView addSubview:self.controls.view];
     self.controls.view.frame = (NSRect){
         (self.frame.size.width / 2) - self.controls.view.frame.size.width / 2, 15, self.controls.view.frame.size.width, self.controls.view.frame.size.height
