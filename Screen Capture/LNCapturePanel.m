@@ -282,28 +282,28 @@
     for(LNResizeHandle* handle in self.resizeHandles) {
         switch (handle.resizeLocation) {
             case LNResizePositionTopLeft:
-                handle.position = CGPointMake(cropRect.origin.x, cropRect.origin.y + cropRect.size.height + 1);
+                handle.position = CGPointMake(cropRect.origin.x, cropRect.origin.y + cropRect.size.height);
                 break;
             case LNResizePositionTopRight:
-                handle.position = CGPointMake(cropRect.origin.x + cropRect.size.width + 1, cropRect.origin.y + cropRect.size.height + 1);
+                handle.position = CGPointMake(cropRect.origin.x + cropRect.size.width, cropRect.origin.y + cropRect.size.height);
                 break;
             case LNResizePositionBottomLeft:
-                handle.position = CGPointMake(cropRect.origin.x + 1, cropRect.origin.y + 1);
+                handle.position = CGPointMake(cropRect.origin.x, cropRect.origin.y);
                 break;
             case LNResizePositionBottomRight:
-                handle.position = CGPointMake(cropRect.origin.x + cropRect.size.width + 1, cropRect.origin.y + 1);
+                handle.position = CGPointMake(cropRect.origin.x + cropRect.size.width, cropRect.origin.y);
                 break;
             case LNResizePositionTop:
-                handle.position = CGPointMake(cropRect.origin.x + (cropRect.size.width / 2), cropRect.origin.y + cropRect.size.height + 1);
+                handle.position = CGPointMake(cropRect.origin.x + (cropRect.size.width / 2), cropRect.origin.y + cropRect.size.height);
                 break;
             case LNResizePositionRight:
-                handle.position = CGPointMake(cropRect.origin.x + cropRect.size.width + 1, cropRect.origin.y + (cropRect.size.height / 2));
+                handle.position = CGPointMake(cropRect.origin.x + cropRect.size.width, cropRect.origin.y + (cropRect.size.height / 2));
                 break;
             case LNResizePositionBottom:
-                handle.position = CGPointMake(cropRect.origin.x + (cropRect.size.width / 2), cropRect.origin.y - 1);
+                handle.position = CGPointMake(cropRect.origin.x + (cropRect.size.width / 2), cropRect.origin.y);
                 break;
             case LNResizePositionLeft:
-                handle.position = CGPointMake(cropRect.origin.x - 1, cropRect.origin.y + (cropRect.size.height / 2));
+                handle.position = CGPointMake(cropRect.origin.x, cropRect.origin.y + (cropRect.size.height / 2));
                 break;
             default:
                 break;
