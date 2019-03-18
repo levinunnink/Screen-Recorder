@@ -365,9 +365,7 @@
     self.controls = [[LNVideoControlsViewController alloc] initWithNibName:@"LNVideoControlsViewController" bundle:nil];
     self.controls.view.wantsLayer = YES; // Otherwise this will be placed below the crop layer on older macOS Versions
     [self.contentView addSubview:self.controls.view];
-    self.controls.view.frame = (NSRect){
-        (self.frame.size.width / 2) - self.controls.view.frame.size.width / 2, 15, self.controls.view.frame.size.width, self.controls.view.frame.size.height
-    };
+    [self positionControls];
     return self;
 }
 
@@ -408,6 +406,12 @@
     }
 }
 
+- (void)setFrame:(NSRect)frameRect display:(BOOL)flag
+{
+    [super setFrame:frameRect display:flag];
+    [self positionControls];
+}
+
 - (void)setCropRect:(NSRect)cropRect
 {
     _cropRect = NSIntegralRect(cropRect);
@@ -423,6 +427,13 @@
 {
     DMARK;
     [self orderOut:sender];
+}
+
+- (void)positionControls
+{
+    self.controls.view.frame = (NSRect){
+        (self.frame.size.width / 2) - self.controls.view.frame.size.width / 2, 15, self.controls.view.frame.size.width, self.controls.view.frame.size.height
+    };
 }
 
 @end

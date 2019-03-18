@@ -13,7 +13,7 @@
 
 @property (nonatomic, strong) AVCaptureSession *mSession;
 @property (nonatomic, strong) AVCaptureMovieFileOutput *mMovieFileOutput;
-@property (copy) void (^complete)(NSError *error, NSURL *fileURL);
+@property (nonatomic, copy) void (^complete)(NSError *error, NSURL *fileURL);
 
 @end
 
@@ -82,7 +82,7 @@
 {
     DLOG(@"Did finish recording to %@ due to error %@", [outputFileURL description], [error description]);
     [self.mSession stopRunning];
-    self.complete(error, outputFileURL);
+    if(self.complete) self.complete(error, outputFileURL);
 }
 
 #pragma mark Private helpers
