@@ -23,6 +23,7 @@
 @property (strong) CALayer *backgroundColorLayer;
 @property (assign) CGPoint startPoint;
 @property (assign) CGRect startRect;
+@property (assign) BOOL liveResize;
 @property (assign) LNResizeHandle *activeHandle;
 @property (strong) NSArray<NSDictionary*>* windows;
 @property (strong) LNWindowInspector *windowInspector;
@@ -155,14 +156,20 @@
 - (void)mouseDragged:(NSEvent *)event
 {
     CGPoint point = [self convertPoint:event.locationInWindow fromView:nil];
+    if(self.liveResize) {
+        CGRect rect = (CGRect){
+            MIN(self.startPoint.x, point.x),
+            MIN(self.startPoint.y, point.y),
+            fabs(self.startPoint.x - point.x),
+            fabs(self.startPoint.y - point.y)
+        };
+        [self setCropRect:rect];
+        return;
+    }
     if (self.activeHandle) {
         [self.activeHandle setRepresentedPoint:point];
-        return;
     } else if (CGRectContainsPoint(self.cropRect, point)) {
         [self moveCropRectFromPoint:self.startPoint ToPoint:point];
-        return;
-    } else {
-        [[NSCursor arrowCursor] set];
     }
 
 }
@@ -175,12 +182,12 @@
     
     if ([layer isKindOfClass:[LNResizeHandle class]]) {
         self.activeHandle = (LNResizeHandle*)layer;
-        return;
-    }
-    if(CGRectContainsPoint(self.cropRect, point))  {
+    } else if(CGRectContainsPoint(self.cropRect, point))  {
         self.startPoint = point;
         self.startRect = self.cropRect;
-        return;
+    } else  {
+        self.liveResize = YES;
+        self.startPoint = point;
     }
 }
 
@@ -188,6 +195,7 @@
 {
     DMARK;
     self.activeHandle = nil;
+    self.liveResize = NO;
 }
 
 - (void)updateTrackingAreas
