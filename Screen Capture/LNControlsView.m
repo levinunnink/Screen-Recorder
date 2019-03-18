@@ -22,7 +22,6 @@
     NSRectFill(self.bounds);
     [mainPath setLineWidth:1.0];
     [mainPath stroke];
-    
     // Drawing code here.
 }
 
