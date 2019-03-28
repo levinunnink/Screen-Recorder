@@ -1,4 +1,4 @@
-Screen-Recorder
+# Screen-Recorder
 
 A simple example of how to use AVFoundation and Cocoa to record a section of a screen in OSX.
 
@@ -7,5 +7,5 @@ A simple example of how to use AVFoundation and Cocoa to record a section of a s
 
 ===
 
-Author: Levi Nunnink - [@levinunnink](https://github.com/levinunnink)
-License: MIT
+- Author: Levi Nunnink - [@levinunnink](https://github.com/levinunnink)
+- License: MIT
